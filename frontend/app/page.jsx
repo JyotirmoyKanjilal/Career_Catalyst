@@ -42,8 +42,11 @@ export default function Home() {
               <Link href="#examples" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
                 Examples
               </Link>
-              <Link href="#pricing" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
-                Pricing
+              <Link href="./about" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
+              About Us
+              </Link>
+              <Link href="./contact" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
+              Contact Us
               </Link>
             </nav>
 
