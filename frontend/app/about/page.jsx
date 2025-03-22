@@ -47,29 +47,25 @@ export default function AboutPage() {
               <h2 className="text-3xl font-bold tracking-tight">Our Story</h2>
               <div className="mt-6 space-y-6 text-lg text-gray-300">
                 <p>
-                  Career Catalyst was founded in 2021 by a team of tech professionals who experienced firsthand the
-                  challenges of interview preparation. After going through countless interviews themselves and helping
-                  friends prepare, they realized there was a gap in the market for personalized, AI-powered interview
+                  Career Catalyst was founded in 2025 by us after we prepared for various interviews.
+                   After going through countless interviews ourselves and helping
+                  friends prepare, we realized there was a gap in the market for personalized, AI-powered interview
                   coaching.
                 </p>
                 <p>
-                  What started as a side project quickly grew into a comprehensive platform used by thousands of job
-                  seekers worldwide. Our team combines expertise in artificial intelligence, career coaching, and
+                  What started as a side project quickly grew into a comprehensive platform used by students who are seeking for guidance
+                  for interview preparation for campus placements. Our team combines expertise in artificial intelligence, career coaching, and
                   industry-specific knowledge to provide the most effective interview preparation tools available.
                 </p>
-                <p>
-                  Today, Career Catalyst is trusted by job seekers from entry-level to executive positions across
-                  various industries. Our mission remains the same: to democratize access to high-quality interview
-                  preparation and help everyone put their best foot forward in interviews.
-                </p>
+                
               </div>
             </div>
-            <div className="relative h-96 rounded-xl overflow-hidden shadow-2xl">
-              <Image
-                src="/placeholder.svg?height=400&width=600"
+            <div className="relative h-96 rounded-xl overflow-hidden shadow-2xl ">
+              <Image 
+                src="/About.jpg"
                 alt="Career Catalyst team"
                 fill
-                className="object-cover"
+                className="object-cover width-100% height-100%"
               />
             </div>
           </div>

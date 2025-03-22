@@ -114,7 +114,7 @@ export default function Home() {
             </div>
             <div className="hidden lg:block relative h-96">
               <Image
-                src="/placeholder.svg?height=500&width=500"
+                src="/teacher.jpg"
                 alt="Career Catalyst Interview Preparation"
                 fill
                 className="object-contain"
@@ -125,7 +125,7 @@ export default function Home() {
       </section>
 
       {/* Trusted By Section */}
-      <section className="bg-gray-900 py-8">
+      {/*<section className="bg-gray-900 py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <p className="text-center text-sm font-semibold uppercase tracking-wide text-gray-400">
             Trusted by job seekers from top companies
