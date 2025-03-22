@@ -414,7 +414,7 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="bg-gray-900 py-16 sm:py-24">
+      {/*<section className="bg-gray-900 py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
@@ -427,7 +427,7 @@ export default function Home() {
 
           <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {/* Testimonial 1 */}
-            <div className="bg-gray-800 rounded-xl p-6 shadow-lg">
+            {/*<div className="bg-gray-800 rounded-xl p-6 shadow-lg">
               <div className="flex items-center mb-4">
                 <div className="h-12 w-12 rounded-full bg-gray-700 overflow-hidden">
                   <Image src="/placeholder.svg?height=48&width=48" alt="User avatar" width={48} height={48} />
@@ -447,7 +447,7 @@ export default function Home() {
             </div>
 
             {/* Testimonial 2 */}
-            <div className="bg-gray-800 rounded-xl p-6 shadow-lg">
+            {/*<div className="bg-gray-800 rounded-xl p-6 shadow-lg">
               <div className="flex items-center mb-4">
                 <div className="h-12 w-12 rounded-full bg-gray-700 overflow-hidden">
                   <Image src="/placeholder.svg?height=48&width=48" alt="User avatar" width={48} height={48} />
@@ -467,7 +467,7 @@ export default function Home() {
             </div>
 
             {/* Testimonial 3 */}
-            <div className="bg-gray-800 rounded-xl p-6 shadow-lg">
+            {/*<div className="bg-gray-800 rounded-xl p-6 shadow-lg">
               <div className="flex items-center mb-4">
                 <div className="h-12 w-12 rounded-full bg-gray-700 overflow-hidden">
                   <Image src="/placeholder.svg?height=48&width=48" alt="User avatar" width={48} height={48} />
