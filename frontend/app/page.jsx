@@ -283,14 +283,14 @@ export default function Home() {
                 <p className="mt-2 text-gray-400 px-4">
                   Type in any interview question you're struggling with or browse our extensive library.
                 </p>
-                <div className="mt-4 h-40 relative mx-auto w-full max-w-xs">
+                {/*<div className="mt-4 h-40 relative mx-auto w-full max-w-xs">
                   <Image
                     src="/placeholder.svg?height=160&width=200"
                     alt="Ask a question"
                     fill
                     className="object-contain"
                   />
-                </div>
+                </div>*/}
               </div>
 
               {/* Step 2 */}
@@ -302,14 +302,14 @@ export default function Home() {
                 <p className="mt-2 text-gray-400 px-4">
                   Receive detailed, tailored responses with examples and strategies for answering effectively.
                 </p>
-                <div className="mt-4 h-40 relative mx-auto w-full max-w-xs">
+                {/*<div className="mt-4 h-40 relative mx-auto w-full max-w-xs">
                   <Image
                     src="/placeholder.svg?height=160&width=200"
                     alt="Get answers"
                     fill
                     className="object-contain"
                   />
-                </div>
+                </div>*/}
               </div>
 
               {/* Step 3 */}
@@ -321,14 +321,14 @@ export default function Home() {
                 <p className="mt-2 text-gray-400 px-4">
                   Practice your responses, get feedback, and track your improvement over time.
                 </p>
-                <div className="mt-4 h-40 relative mx-auto w-full max-w-xs">
+                {/* <div className="mt-4 h-40 relative mx-auto w-full max-w-xs"> 
                   <Image
                     src="/placeholder.svg?height=160&width=200"
                     alt="Practice and improve"
                     fill
                     className="object-contain"
                   />
-                </div>
+                </div>*/}
               </div>
             </div>
           </div>
