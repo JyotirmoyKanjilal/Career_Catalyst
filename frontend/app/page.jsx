@@ -814,7 +814,7 @@ export default function Home() {
                   <div className="relative transform transition-transform hover:rotate-3 duration-500">
                     <div className="absolute inset-0 bg-white/20 rounded-lg transform rotate-3"></div>
                     <Image
-                      src="/placeholder.svg?height=300&width=300"
+                      src="/HomeImage.png"
                       alt="Career success"
                       width={300}
                       height={300}
