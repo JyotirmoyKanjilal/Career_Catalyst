@@ -602,7 +602,7 @@ export default function Home() {
                     <div className="absolute inset-0 bg-gradient-to-r from-[#006770]/10 to-[#00A3A9]/10 rounded-lg transform rotate-3 group-hover:rotate-6 transition-transform duration-300"></div>
                     <div className="absolute inset-0 bg-[#070F12] rounded-lg border border-[#003B46]/20 group-hover:border-[#00A3A9]/40 transition-colors duration-300"></div>
                     <Image
-                      src="/placeholder.svg?height=160&width=200"
+                      src="/askQuestions.jpg"
                       alt={step.title}
                       width={200}
                       height={160}
