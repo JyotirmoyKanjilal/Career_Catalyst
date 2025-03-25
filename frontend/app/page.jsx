@@ -408,7 +408,7 @@ export default function Home() {
                   <div className="absolute -top-4 -left-4 w-24 h-24 bg-[#00A3A9]/10 rounded-full blur-xl"></div>
                   <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-[#008C8B]/10 rounded-full blur-xl"></div>
                   <Image
-                    src="/placeholder.svg?height=400&width=400"
+                    src= "/CChome.png"
                     alt="Career Catalyst Interview Preparation"
                     width={400}
                     height={400}
