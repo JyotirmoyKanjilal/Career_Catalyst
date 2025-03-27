@@ -261,7 +261,7 @@ export default function Contact() {
             </div>
 
             {/* Map or Office Image */}
-            <div className="bg-[#070F12]/80 backdrop-blur-sm rounded-xl overflow-hidden border border-[#003B46]/20 shadow-xl transition-all duration-500 hover:border-[#00A3A9]/30 hover:shadow-[#00A3A9]/10 h-64 relative group">
+            {/* <div className="bg-[#070F12]/80 backdrop-blur-sm rounded-xl overflow-hidden border border-[#003B46]/20 shadow-xl transition-all duration-500 hover:border-[#00A3A9]/30 hover:shadow-[#00A3A9]/10 h-64 relative group">
               <div className="absolute inset-0 bg-gradient-to-r from-[#003B46]/10 to-[#00A3A9]/10 group-hover:opacity-0 transition-opacity duration-300"></div>
               <Image src="/placeholder.svg?height=400&width=600" alt="Office location" fill className="object-cover" />
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -275,7 +275,7 @@ export default function Contact() {
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
