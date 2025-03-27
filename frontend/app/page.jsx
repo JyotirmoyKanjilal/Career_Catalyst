@@ -568,17 +568,20 @@ export default function Home() {
                   step: 1,
                   title: "Ask Your Question",
                   description: "Type in any interview question you're struggling with or browse our extensive library.",
+                  img: "/askQuestions.jpg"
                 },
                 {
                   step: 2,
                   title: "Get Expert Answers",
                   description:
                     "Receive detailed, tailored responses with examples and strategies for answering effectively.",
+                    img: "/GetAnswers.png"
                 },
                 {
                   step: 3,
                   title: "Practice & Improve",
                   description: "Practice your responses, get feedback, and track your improvement over time.",
+                  img: "/Practice.png"
                 },
               ].map((step, index) => (
                 <div
@@ -602,7 +605,7 @@ export default function Home() {
                     <div className="absolute inset-0 bg-gradient-to-r from-[#006770]/10 to-[#00A3A9]/10 rounded-lg transform rotate-3 group-hover:rotate-6 transition-transform duration-300"></div>
                     <div className="absolute inset-0 bg-[#070F12] rounded-lg border border-[#003B46]/20 group-hover:border-[#00A3A9]/40 transition-colors duration-300"></div>
                     <Image
-                      src="/askQuestions.jpg"
+                      src={step.img}
                       alt={step.title}
                       width={200}
                       height={160}

@@ -101,7 +101,7 @@ export default function About() {
                 We're committed to helping job seekers at all stages of their careers prepare effectively for
                 interviews, build confidence, and showcase their skills to potential employers.
               </p>
-              <div className="mt-8 grid grid-cols-2 gap-4">
+              {/* <div className="mt-8 grid grid-cols-2 gap-4">
                 <div className="bg-[#003B46]/20 rounded-lg p-4 border border-[#003B46]/30">
                   <h3 className="text-xl font-bold text-[#00A3A9]">50,000+</h3>
                   <p className="text-gray-400">Users Helped</p>
@@ -118,7 +118,7 @@ export default function About() {
                   <h3 className="text-xl font-bold text-[#00A3A9]">24/7</h3>
                   <p className="text-gray-400">Support Available</p>
                 </div>
-              </div>
+              </div> */}
             </div>
             <div
               className={`mt-10 lg:mt-0 relative transition-all duration-1000 ${isVisible.mission ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"}`}
@@ -168,13 +168,13 @@ export default function About() {
               {
                 name: "Jyotirmoy Kanjilal",
                 role: "Founder & CEO",
-                bio: "Former tech recruiter with 10+ years of experience. Alex founded Career Catalyst to solve the interview preparation challenges he witnessed firsthand.",
+                bio: "",
                 image: "/placeholder.svg?height=300&width=300",
               },
               {
                 name: "Yash Kumar",
                 role: "Chief AI Officer",
-                bio: "PhD in Machine Learning from MIT. Priya leads our AI development team, ensuring our platform provides accurate, personalized guidance.",
+                bio: "",
                 image: "/placeholder.svg?height=300&width=300",
               },
               
