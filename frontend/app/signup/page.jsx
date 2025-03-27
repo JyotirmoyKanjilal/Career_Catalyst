@@ -317,7 +317,7 @@ export default function Signup() {
             style={{ animationDelay: "1s" }}
           ></div>
 
-          <div className="absolute inset-0 flex flex-col justify-center items-center p-12">
+          {/*<div className="absolute inset-0 flex flex-col justify-center items-center p-12">
             <div className="max-w-md text-center">
               <h2 className="text-3xl font-bold text-white mb-6">Join thousands of successful job seekers</h2>
               <p className="text-lg text-white/80 mb-8">
@@ -347,7 +347,7 @@ export default function Signup() {
                 </Link>
               </div>
             </div>
-          </div>
+          </div>*/}
         </div>
       </div>
 

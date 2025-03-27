@@ -449,7 +449,7 @@ export default function Home() {
                   style={{ animationDelay: "1.5s" }}
                 ></div>
                 <Image
-                  src="/placeholder.svg?height=320&width=320"
+                  src="/HomeImage.png"
                   alt="Career Catalyst Interview Preparation"
                   width={320}
                   height={320}

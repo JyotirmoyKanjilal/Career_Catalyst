@@ -227,8 +227,8 @@ export default function Contact() {
                   </div>
                   <div className="ml-4">
                     <h3 className="text-lg font-medium text-[#00A3A9]">Email</h3>
-                    <p className="mt-1 text-gray-300">support@careercatalyst.com</p>
-                    <p className="mt-1 text-gray-300">info@careercatalyst.com</p>
+                    <p className="mt-1 text-gray-300">kanjilaljyotirmoy@gmail.com</p>
+                    <p className="mt-1 text-gray-300">yashkumar@gmail.com</p>
                   </div>
                 </div>
 
@@ -240,7 +240,7 @@ export default function Contact() {
                   </div>
                   <div className="ml-4">
                     <h3 className="text-lg font-medium text-[#00A3A9]">Phone</h3>
-                    <p className="mt-1 text-gray-300">+1 (555) 123-4567</p>
+                    <p className="mt-1 text-gray-300">+91 9876543210</p>
                     <p className="mt-1 text-gray-300">Mon-Fri, 9am-5pm EST</p>
                   </div>
                 </div>

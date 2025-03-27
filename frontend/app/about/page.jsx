@@ -130,7 +130,7 @@ export default function About() {
               ></div>
               <div className="relative rounded-lg overflow-hidden shadow-xl">
                 <Image
-                  src="/placeholder.svg?height=500&width=500"
+                  src="/HomeImage.png"
                   alt="Our mission"
                   width={500}
                   height={500}
@@ -166,41 +166,18 @@ export default function About() {
           <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {[
               {
-                name: "Alex Johnson",
+                name: "Jyotirmoy Kanjilal",
                 role: "Founder & CEO",
                 bio: "Former tech recruiter with 10+ years of experience. Alex founded Career Catalyst to solve the interview preparation challenges he witnessed firsthand.",
                 image: "/placeholder.svg?height=300&width=300",
               },
               {
-                name: "Priya Sharma",
+                name: "Yash Kumar",
                 role: "Chief AI Officer",
                 bio: "PhD in Machine Learning from MIT. Priya leads our AI development team, ensuring our platform provides accurate, personalized guidance.",
                 image: "/placeholder.svg?height=300&width=300",
               },
-              {
-                name: "Marcus Chen",
-                role: "Head of Career Coaching",
-                bio: "Certified career coach with experience at Fortune 500 companies. Marcus oversees our content strategy and expert verification process.",
-                image: "/placeholder.svg?height=300&width=300",
-              },
-              {
-                name: "Sophia Rodriguez",
-                role: "CTO",
-                bio: "Full-stack developer with a passion for creating intuitive user experiences. Sophia built the first prototype of Career Catalyst in a weekend hackathon.",
-                image: "/placeholder.svg?height=300&width=300",
-              },
-              {
-                name: "James Wilson",
-                role: "Head of Customer Success",
-                bio: "Former career counselor with a knack for understanding user needs. James ensures our platform continuously evolves to serve job seekers better.",
-                image: "/placeholder.svg?height=300&width=300",
-              },
-              {
-                name: "Aisha Patel",
-                role: "Director of Partnerships",
-                bio: "Background in HR and recruiting. Aisha builds relationships with companies and educational institutions to expand Career Catalyst's reach.",
-                image: "/placeholder.svg?height=300&width=300",
-              },
+              
             ].map((member, index) => (
               <div
                 key={index}

@@ -247,7 +247,7 @@ export default function Login() {
               <div className="flex justify-center">
                 <div className="relative w-64 h-64 rounded-lg overflow-hidden shadow-2xl">
                   <Image
-                    src="/placeholder.svg?height=300&width=300"
+                    src="/HomeImage.png"
                     alt="Career Catalyst App"
                     fill
                     className="object-cover"
