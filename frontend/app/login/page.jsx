@@ -4,6 +4,47 @@ import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Briefcase, Mail, Lock, Eye, EyeOff, ArrowRight, Github, Twitter } from "lucide-react"
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import axios from "axios";
+import toast from "react-hot-toast";
+
+const Login = () => {
+  // Define validation schema using Yup
+  const validationSchema = Yup.object({
+      email: Yup.string()
+          .email('Invalid email address')
+          .required('Email is required'),
+      password: Yup.string()
+          .min(6, 'Password must be at least 6 characters')
+          .required('Password is required'),
+  });
+
+  // Initialize Formik
+  const formik = useFormik({
+      initialValues: {
+          email: '',
+          password: '',
+      },
+      validationSchema: validationSchema,
+      onSubmit: (values) => {
+          console.log('Form submitted:', values);
+
+          axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/authenticate`, values)
+          
+          .then((result) => {
+            console.log(result.data);
+            localStorage.setItem('user',result.data.token);
+            toast.success("login Successful");
+            
+          }).catch((err) => {
+            console.log(err);
+            toast.error("login failed.PLease check your credentials"); 
+          });
+          // Here you would typically handle authentication
+          // e.g., call an API to verify credentials
+      },
+  });
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
@@ -292,4 +333,4 @@ export default function Login() {
     </div>
   )
 }
-
+}
