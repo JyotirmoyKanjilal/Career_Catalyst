@@ -1,9 +1,16 @@
-"use client"
+'use client';
 
 import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Briefcase, Mail, Lock, Eye, EyeOff, ArrowRight, Github, Twitter } from "lucide-react"
+import toast from "react-hot-toast";
+import * as Yup from "yup";
+import { Formik, useFormik } from "formik"
+import { useRouter } from "next/navigation"
+import React from "react"
+import axios from "axios"
+
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
@@ -14,24 +21,41 @@ export default function Login() {
   })
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target
-    setFormState((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }))
-  }
+    // Define validation schema using Yup
+    const validationSchema = Yup.object({
+        email: Yup.string()
+            .email('Invalid email address')
+            .required('Email is required'),
+        password: Yup.string()
+            .min(6, 'Password must be at least 6 characters')
+            .required('Password is required'),
+    });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
+    // Initialize Formik
+    const Formik = useFormik({
+        initialValues: {
+            email: '',
+            password: '',
+        },
+        validationSchema: validationSchema,
+        onSubmit: (values) => {
+            console.log('Form submitted:', values);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    setIsLoading(false)
-    // Redirect would happen here in a real app
-  }
+            axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/authenticate`, values)
+            
+            .then((result) => {
+              console.log(result.data);
+              localStorage.setItem('user',result.data.token);
+              toast.success("login Successful");
+              
+            }).catch((err) => {
+              console.log(err);
+              toast.error("login failed.PLease check your credentials"); 
+            });
+            // Here you would typically handle authentication
+            // e.g., call an API to verify credentials
+        },
+    });
 
   return (
     <div className="min-h-screen bg-[#070F12] text-gray-100 flex flex-col">
@@ -66,7 +90,7 @@ export default function Login() {
               <p className="mt-2 text-gray-400">Sign in to your account to continue</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={Formik.handleSubmit} className="space-y-6">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
                   Email Address
@@ -81,8 +105,9 @@ export default function Login() {
                     type="email"
                     autoComplete="email"
                     required
-                    value={formState.email}
-                    onChange={handleChange}
+                    onChange={Formik.handleChange}
+                    onBlur={Formik.handleBlur}
+                    value={Formik.values.email}
                     className="block w-full pl-10 pr-3 py-3 border-2 border-[#003B46]/50 rounded-md bg-[#070F12]/80 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
                     placeholder="you@example.com"
                   />
@@ -103,8 +128,9 @@ export default function Login() {
                     type={showPassword ? "text" : "password"}
                     autoComplete="current-password"
                     required
-                    value={formState.password}
-                    onChange={handleChange}
+                    onChange={Formik.handleChange}
+                    value={Formik.values.password}
+                    onBlur={Formik.handleBlur}
                     className="block w-full pl-10 pr-10 py-3 border-2 border-[#003B46]/50 rounded-md bg-[#070F12]/80 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
                     placeholder="••••••••"
                   />
@@ -121,19 +147,6 @@ export default function Login() {
               </div>
 
               <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <input
-                    id="remember-me"
-                    name="rememberMe"
-                    type="checkbox"
-                    checked={formState.rememberMe}
-                    onChange={handleChange}
-                    className="h-4 w-4 rounded border-gray-600 bg-[#070F12] text-[#00A3A9] focus:ring-[#00A3A9] focus:ring-offset-[#070F12]"
-                  />
-                  <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
-                    Remember me
-                  </label>
-                </div>
                 <div className="text-sm">
                   <Link href="#" className="font-medium text-[#00A3A9] hover:text-[#008C8B] transition-colors">
                     Forgot your password?
@@ -291,4 +304,4 @@ export default function Login() {
       </footer>
     </div>
   )
-}
+};
