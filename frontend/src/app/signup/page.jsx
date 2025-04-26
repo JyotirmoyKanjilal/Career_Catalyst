@@ -3,6 +3,12 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Briefcase, Mail, Lock, User, Eye, EyeOff, ArrowRight, CheckCircle, Github, Twitter } from "lucide-react"
+import toast from "react-hot-toast";
+import * as Yup from "yup";
+import { Formik, useFormik } from "formik"
+import { useRouter } from "next/navigation"
+import React from "react"
+import axios from "axios"
 
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false)
