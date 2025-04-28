@@ -109,7 +109,7 @@ export default function QuestionManager() {
       category: "Behavioral",
       difficulty: "Easy",
       tags: ["Stress Management", "Self-Assessment"],
-      saved: true,
+      saved: true, 
       views: 789,
       answers: 22,
       rating: 4.4,
