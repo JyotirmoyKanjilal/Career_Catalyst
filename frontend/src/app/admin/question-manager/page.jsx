@@ -1,8 +1,9 @@
-"use client"
+'use client';
 
-import { useState, useEffect, useRef } from "react"
-import Link from "next/link"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Briefcase,
   Search,
@@ -26,492 +27,116 @@ import {
   Folder,
   FolderPlus,
   Eye,
-} from "lucide-react"
+} from "lucide-react";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function QuestionManager() {
   // State for questions and UI
-  const [questions, setQuestions] = useState([
-    {
-      id: 1,
-      question: "Tell me about yourself",
-      category: "Behavioral",
-      difficulty: "Easy",
-      tags: ["Common", "Introduction", "All Levels"],
-      saved: true,
-      views: 1245,
-      answers: 32,
-      rating: 4.8,
-      createdAt: "2023-05-15",
-    },
-    {
-      id: 2,
-      question: "What is your greatest weakness?",
-      category: "Behavioral",
-      difficulty: "Medium",
-      tags: ["Common", "Self-Assessment"],
-      saved: false,
-      views: 987,
-      answers: 28,
-      rating: 4.5,
-      createdAt: "2023-06-02",
-    },
-    {
-      id: 3,
-      question: "Explain the concept of RESTful APIs",
-      category: "Technical",
-      difficulty: "Medium",
-      tags: ["Web Development", "Backend", "API"],
-      saved: true,
-      views: 756,
-      answers: 15,
-      rating: 4.7,
-      createdAt: "2023-06-10",
-    },
-    {
-      id: 4,
-      question: "How would you implement a binary search tree?",
-      category: "Technical",
-      difficulty: "Hard",
-      tags: ["Data Structures", "Algorithms", "Computer Science"],
-      saved: false,
-      views: 543,
-      answers: 12,
-      rating: 4.9,
-      createdAt: "2023-06-15",
-    },
-    {
-      id: 5,
-      question: "Describe a time when you had to deal with a difficult team member",
-      category: "Behavioral",
-      difficulty: "Medium",
-      tags: ["Teamwork", "Conflict Resolution"],
-      saved: true,
-      views: 876,
-      answers: 24,
-      rating: 4.6,
-      createdAt: "2023-06-20",
-    },
-    {
-      id: 6,
-      question: "What are closures in JavaScript?",
-      category: "Technical",
-      difficulty: "Medium",
-      tags: ["JavaScript", "Frontend", "Programming Concepts"],
-      saved: false,
-      views: 654,
-      answers: 18,
-      rating: 4.7,
-      createdAt: "2023-06-25",
-    },
-    {
-      id: 7,
-      question: "How do you handle stress and pressure?",
-      category: "Behavioral",
-      difficulty: "Easy",
-      tags: ["Stress Management", "Self-Assessment"],
-      saved: true,
-      views: 789,
-      answers: 22,
-      rating: 4.4,
-      createdAt: "2023-07-01",
-    },
-    {
-      id: 8,
-      question: "Explain the difference between HTTP and HTTPS",
-      category: "Technical",
-      difficulty: "Easy",
-      tags: ["Networking", "Web Development", "Security"],
-      saved: false,
-      views: 567,
-      answers: 14,
-      rating: 4.6,
-      createdAt: "2023-07-05",
-    },
-  ])
-
-  // UI state
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("All")
-  const [selectedDifficulty, setSelectedDifficulty] = useState("All")
-  const [selectedTags, setSelectedTags] = useState([])
-  const [showFilters, setShowFilters] = useState(false)
-  const [isAddingQuestion, setIsAddingQuestion] = useState(false)
-  const [isEditingQuestion, setIsEditingQuestion] = useState(null)
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null)
-  const [sortBy, setSortBy] = useState("newest")
-  const [scrolled, setScrolled] = useState(false)
-  const [isAddingCollection, setIsAddingCollection] = useState(false)
-  const [newCollectionName, setNewCollectionName] = useState("")
-  const [collections, setCollections] = useState([
-    { id: 1, name: "Favorites", count: 3 },
-    { id: 2, name: "Technical Interview Prep", count: 5 },
-    { id: 3, name: "Behavioral Questions", count: 4 },
-  ])
-  const [selectedCollection, setSelectedCollection] = useState(null)
-  const [showCollections, setShowCollections] = useState(false)
+  const [questions, setQuestions] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedDifficulty, setSelectedDifficulty] = useState("All");
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedCollection, setSelectedCollection] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [showCollections, setShowCollections] = useState(false);
+  const [isAddingQuestion, setIsAddingQuestion] = useState(false);
+  const [isEditingQuestion, setIsEditingQuestion] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
+  const [sortBy, setSortBy] = useState("newest");
+  const [scrolled, setScrolled] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [newQuestion, setNewQuestion] = useState({
     question: "",
     category: "Behavioral",
     difficulty: "Medium",
     tags: [],
-  })
-  const [newTag, setNewTag] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [successMessage, setSuccessMessage] = useState("")
-  const [errorMessage, setErrorMessage] = useState("")
+  });
+  const [availableTags, setAvailableTags] = useState(["React", "JavaScript", "CSS", "HTML", "Node.js"]);
+  const [newTag, setNewTag] = useState("");
 
-  const filterRef = useRef(null)
-  const collectionsRef = useRef(null)
+  const filterRef = useRef(null);
+  const collectionsRef = useRef(null);
 
   // Categories and difficulties
-  const categories = ["All", "Behavioral", "Technical", "Situational", "Industry-Specific", "Role-Specific"]
-  const difficulties = ["All", "Easy", "Medium", "Hard"]
+  const categories = ["All", "Behavioral", "Technical", "Situational", "Industry-Specific", "Role-Specific"];
+  const difficulties = ["All", "Easy", "Medium", "Hard"];
 
-  // All available tags
-  const availableTags = [
-    "Common",
-    "Introduction",
-    "All Levels",
-    "Self-Assessment",
-    "Web Development",
-    "Backend",
-    "API",
-    "Data Structures",
-    "Algorithms",
-    "Computer Science",
-    "Teamwork",
-    "Conflict Resolution",
-    "JavaScript",
-    "Frontend",
-    "Programming Concepts",
-    "Stress Management",
-    "Networking",
-    "Security",
-    "Leadership",
-    "Problem Solving",
-  ]
-
-  // Handle scroll events for header
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
+  // Fetch questions from the backend
+  const fetchQuestions = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/questions/getall`);
+      setQuestions(response.data);
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+      setErrorMessage("Failed to fetch questions. Please try again later.");
     }
+  };
 
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
-  // Close filters when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (filterRef.current && !filterRef.current.contains(event.target)) {
-        setShowFilters(false)
-      }
-      if (collectionsRef.current && !collectionsRef.current.contains(event.target)) {
-        setShowCollections(false)
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [])
-
-  // Particle animation for background
-  useEffect(() => {
-    const canvas = document.getElementById("question-canvas")
-    if (!canvas) return
-
-    const ctx = canvas.getContext("2d")
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
-
-    // Reduce particle count on mobile for better performance
-    const isMobile = window.innerWidth < 768
-    const particleCount = isMobile ? 15 : 30
-    const particles = []
-
-    class Particle {
-      constructor() {
-        this.x = Math.random() * canvas.width
-        this.y = Math.random() * canvas.height
-        this.size = Math.random() * 2 + 0.5
-        this.speedX = Math.random() * 1 - 0.5
-        this.speedY = Math.random() * 1 - 0.5
-
-        // Use teal color palette for particles
-        const tealShades = [
-          `rgba(0, 59, 70, ${Math.random() * 0.3 + 0.1})`,
-          `rgba(0, 103, 112, ${Math.random() * 0.3 + 0.1})`,
-          `rgba(0, 140, 139, ${Math.random() * 0.3 + 0.1})`,
-          `rgba(0, 163, 169, ${Math.random() * 0.3 + 0.1})`,
-        ]
-        this.color = tealShades[Math.floor(Math.random() * tealShades.length)]
-      }
-
-      update() {
-        this.x += this.speedX
-        this.y += this.speedY
-
-        if (this.x > canvas.width) this.x = 0
-        else if (this.x < 0) this.x = canvas.width
-
-        if (this.y > canvas.height) this.y = 0
-        else if (this.y < 0) this.y = canvas.height
-      }
-
-      draw() {
-        ctx.fillStyle = this.color
-        ctx.beginPath()
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
-        ctx.fill()
-      }
-    }
-
-    const init = () => {
-      particles.length = 0 // Clear existing particles
-      for (let i = 0; i < particleCount; i++) {
-        particles.push(new Particle())
-      }
-    }
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-      for (let i = 0; i < particles.length; i++) {
-        particles[i].update()
-        particles[i].draw()
-      }
-
-      requestAnimationFrame(animate)
-    }
-
-    init()
-    animate()
-
-    const handleResize = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-
-      // Reinitialize particles on resize
-      const newIsMobile = window.innerWidth < 768
-      if (newIsMobile !== isMobile) {
-        init()
-      }
-    }
-
-    window.addEventListener("resize", handleResize)
-
-    return () => {
-      window.removeEventListener("resize", handleResize)
-    }
-  }, [])
-
-  // Filter questions based on search, category, difficulty, and tags
-  const filteredQuestions = questions.filter((question) => {
-    const matchesSearch = question.question.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === "All" || question.category === selectedCategory
-    const matchesDifficulty = selectedDifficulty === "All" || question.difficulty === selectedDifficulty
-    const matchesTags = selectedTags.length === 0 || selectedTags.some((tag) => question.tags.includes(tag))
-    const matchesCollection =
-      !selectedCollection ||
-      (selectedCollection.id === 1 && question.saved) ||
-      (selectedCollection.id === 2 && question.category === "Technical") ||
-      (selectedCollection.id === 3 && question.category === "Behavioral")
-
-    return matchesSearch && matchesCategory && matchesDifficulty && matchesTags && matchesCollection
-  })
-
-  // Sort questions
-  const sortedQuestions = [...filteredQuestions].sort((a, b) => {
-    switch (sortBy) {
-      case "newest":
-        return new Date(b.createdAt) - new Date(a.createdAt)
-      case "oldest":
-        return new Date(a.createdAt) - new Date(b.createdAt)
-      case "mostViewed":
-        return b.views - a.views
-      case "mostAnswers":
-        return b.answers - a.answers
-      case "highestRated":
-        return b.rating - a.rating
-      default:
-        return 0
-    }
-  })
-
-  // Toggle question saved status
+  // Toggle saved status of a question
   const toggleSaved = (id) => {
-    setQuestions(questions.map((q) => (q.id === id ? { ...q, saved: !q.saved } : q)))
-  }
+    setQuestions(
+      questions.map((q) =>
+        q._id === id ? { ...q, saved: !q.saved } : q
+      )
+    );
+  };
 
-  // Add new tag to question
-  const addTag = () => {
-    if (newTag && !newQuestion.tags.includes(newTag)) {
-      setNewQuestion({
-        ...newQuestion,
-        tags: [...newQuestion.tags, newTag],
-      })
-      setNewTag("")
-    }
-  }
+  // Filter and sort questions
+  const filteredQuestions = questions.filter((q) => {
+    const matchesCategory = selectedCategory === "All" || q.category === selectedCategory;
+    const matchesDifficulty = selectedDifficulty === "All" || q.difficulty === selectedDifficulty;
+    const matchesTags = selectedTags.every((tag) => q.tags.includes(tag));
+    const matchesSearch = q.question.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesDifficulty && matchesTags && matchesSearch;
+  });
 
-  // Remove tag from question
-  const removeTag = (tag) => {
-    setNewQuestion({
-      ...newQuestion,
-      tags: newQuestion.tags.filter((t) => t !== tag),
-    })
-  }
+  const sortedQuestions = filteredQuestions.sort((a, b) => {
+    if (sortBy === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
+    if (sortBy === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
+    if (sortBy === "mostViewed") return b.views - a.views;
+    if (sortBy === "mostAnswers") return b.answers - a.answers;
+    if (sortBy === "highestRated") return b.rating - a.rating;
+    return 0;
+  });
 
-  // Handle form input changes
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setNewQuestion({
-      ...newQuestion,
-      [name]: value,
-    })
-  }
+  // Fetch questions on component mount
+  useEffect(() => {
+    fetchQuestions();
+  }, []);
 
-  // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    setErrorMessage("")
-
-    // Validate form
-    if (!newQuestion.question.trim()) {
-      setErrorMessage("Question text is required")
-      setIsSubmitting(false)
-      return
-    }
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
+  const handleQuestionAddSubmit = () => {
     if (isEditingQuestion) {
       // Update existing question
-      setQuestions(
-        questions.map((q) =>
-          q.id === isEditingQuestion
-            ? {
-                ...q,
-                question: newQuestion.question,
-                category: newQuestion.category,
-                difficulty: newQuestion.difficulty,
-                tags: newQuestion.tags,
-              }
-            : q,
-        ),
-      )
-      setSuccessMessage("Question updated successfully!")
+      axios
+        .put(`${API_URL}/questions/update/${isEditingQuestion}`, newQuestion)
+        .then(() => {
+          setSuccessMessage("Question updated successfully!");
+          setIsAddingQuestion(false);
+          setIsEditingQuestion(null);
+          fetchQuestions();
+        })
+        .catch((error) => {
+          console.error("Error updating question:", error);
+          setErrorMessage("Failed to update question. Please try again later.");
+        });
     } else {
       // Add new question
-      const newId = Math.max(...questions.map((q) => q.id)) + 1
-      const newQuestionObj = {
-        id: newId,
-        question: newQuestion.question,
-        category: newQuestion.category,
-        difficulty: newQuestion.difficulty,
-        tags: newQuestion.tags,
-        saved: false,
-        views: 0,
-        answers: 0,
-        rating: 0,
-        createdAt: new Date().toISOString().split("T")[0],
-      }
-      setQuestions([...questions, newQuestionObj])
-      setSuccessMessage("Question added successfully!")
+      axios
+        .post(`${API_URL}/questions/add`, newQuestion)
+        .then(() => {
+          setSuccessMessage("Question added successfully!");
+          setIsAddingQuestion(false);
+          fetchQuestions();
+        })
+        .catch((error) => {
+          console.error("Error adding question:", error);
+          setErrorMessage("Failed to add question. Please try again later.");
+        });
     }
-
-    setIsSubmitting(false)
-    setIsAddingQuestion(false)
-    setIsEditingQuestion(null)
-    setNewQuestion({
-      question: "",
-      category: "Behavioral",
-      difficulty: "Medium",
-      tags: [],
-    })
-
-    // Clear success message after 3 seconds
-    setTimeout(() => {
-      setSuccessMessage("")
-    }, 3000)
-  }
-
-  // Edit question
-  const editQuestion = (id) => {
-    const questionToEdit = questions.find((q) => q.id === id)
-    setNewQuestion({
-      question: questionToEdit.question,
-      category: questionToEdit.category,
-      difficulty: questionToEdit.difficulty,
-      tags: [...questionToEdit.tags],
-    })
-    setIsEditingQuestion(id)
-    setIsAddingQuestion(true)
-  }
-
-  // Delete question
-  const deleteQuestion = async (id) => {
-    setIsSubmitting(true)
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    setQuestions(questions.filter((q) => q.id !== id))
-    setShowDeleteConfirm(null)
-    setIsSubmitting(false)
-    setSuccessMessage("Question deleted successfully!")
-
-    // Clear success message after 3 seconds
-    setTimeout(() => {
-      setSuccessMessage("")
-    }, 3000)
-  }
-
-  // Add new collection
-  const addCollection = () => {
-    if (newCollectionName.trim()) {
-      const newId = Math.max(...collections.map((c) => c.id)) + 1
-      setCollections([...collections, { id: newId, name: newCollectionName, count: 0 }])
-      setNewCollectionName("")
-      setIsAddingCollection(false)
-      setSuccessMessage("Collection added successfully!")
-
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        setSuccessMessage("")
-      }, 3000)
-    }
-  }
-
-  // Animation variants for framer-motion
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { type: "spring", stiffness: 100 },
-    },
-  }
-
-  const fadeVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.5 },
-    },
   }
 
   return (
@@ -678,7 +303,7 @@ export default function QuestionManager() {
                             value=""
                             onChange={(e) => {
                               if (e.target.value && !selectedTags.includes(e.target.value)) {
-                                setSelectedTags([...selectedTags, e.target.value])
+                                setSelectedTags([...selectedTags, e.target.value]);
                               }
                             }}
                             className="w-full bg-[#070F12] border border-[#003B46]/50 rounded-md p-2 text-sm focus:border-[#00A3A9] outline-none"
@@ -697,10 +322,10 @@ export default function QuestionManager() {
                         <div className="flex justify-end pt-2">
                           <button
                             onClick={() => {
-                              setSelectedCategory("All")
-                              setSelectedDifficulty("All")
-                              setSelectedTags([])
-                              setShowFilters(false)
+                              setSelectedCategory("All");
+                              setSelectedDifficulty("All");
+                              setSelectedTags([]);
+                              setShowFilters(false);
                             }}
                             className="px-3 py-1 text-sm text-[#00A3A9] hover:text-[#008C8B] transition-colors"
                           >
@@ -737,8 +362,8 @@ export default function QuestionManager() {
                         <div className="space-y-2 max-h-60 overflow-y-auto">
                           <button
                             onClick={() => {
-                              setSelectedCollection(null)
-                              setShowCollections(false)
+                              setSelectedCollection(null);
+                              setShowCollections(false);
                             }}
                             className={`w-full text-left px-3 py-2 rounded-md text-sm ${
                               !selectedCollection ? "bg-[#003B46]/50 text-white" : "hover:bg-[#003B46]/20 text-gray-300"
@@ -751,8 +376,8 @@ export default function QuestionManager() {
                             <button
                               key={collection.id}
                               onClick={() => {
-                                setSelectedCollection(collection)
-                                setShowCollections(false)
+                                setSelectedCollection(collection);
+                                setShowCollections(false);
                               }}
                               className={`w-full text-left px-3 py-2 rounded-md text-sm ${
                                 selectedCollection?.id === collection.id
@@ -827,14 +452,14 @@ export default function QuestionManager() {
 
               <button
                 onClick={() => {
-                  setIsAddingQuestion(true)
-                  setIsEditingQuestion(null)
+                  setIsAddingQuestion(true);
+                  setIsEditingQuestion(null);
                   setNewQuestion({
                     question: "",
                     category: "Behavioral",
                     difficulty: "Medium",
                     tags: [],
-                  })
+                  });
                 }}
                 className="inline-flex items-center px-4 py-2 bg-[#006770] hover:bg-[#00A3A9] text-white rounded-md transition-colors"
               >
@@ -870,7 +495,7 @@ export default function QuestionManager() {
             <motion.div className="space-y-4" initial="hidden" animate="visible" variants={containerVariants}>
               {sortedQuestions.map((question) => (
                 <motion.div
-                  key={question.id}
+                  key={question._id}
                   variants={itemVariants}
                   className="bg-[#070F12]/80 backdrop-blur-sm rounded-xl p-5 border border-[#003B46]/20 shadow-xl transition-all duration-300 hover:border-[#00A3A9]/30 hover:shadow-[#00A3A9]/10 group"
                 >
@@ -1019,11 +644,11 @@ export default function QuestionManager() {
                 selectedTags.length > 0) && (
                 <button
                   onClick={() => {
-                    setSearchTerm("")
-                    setSelectedCategory("All")
-                    setSelectedDifficulty("All")
-                    setSelectedTags([])
-                    setSelectedCollection(null)
+                    setSearchTerm("");
+                    setSelectedCategory("All");
+                    setSelectedDifficulty("All");
+                    setSelectedTags([]);
+                    setSelectedCollection(null);
                   }}
                   className="mt-4 px-4 py-2 text-[#00A3A9] hover:text-[#008C8B] transition-colors"
                 >
@@ -1054,8 +679,8 @@ export default function QuestionManager() {
                     <h2 className="text-xl font-bold">{isEditingQuestion ? "Edit Question" : "Add New Question"}</h2>
                     <button
                       onClick={() => {
-                        setIsAddingQuestion(false)
-                        setIsEditingQuestion(null)
+                        setIsAddingQuestion(false);
+                        setIsEditingQuestion(null);
                       }}
                       className="text-gray-400 hover:text-white transition-colors"
                     >
@@ -1063,7 +688,7 @@ export default function QuestionManager() {
                     </button>
                   </div>
 
-                  <form onSubmit={handleSubmit} className="space-y-4">
+                  <form onSubmit={handleQuestionAddSubmit} className="space-y-4">
                     <div>
                       <label htmlFor="question" className="block text-sm font-medium text-gray-300 mb-1">
                         Question Text
@@ -1072,7 +697,7 @@ export default function QuestionManager() {
                         id="question"
                         name="question"
                         value={newQuestion.question}
-                        onChange={handleChange}
+                        onChange={(e) => setNewQuestion({ ...newQuestion, question: e.target.value })}
                         rows={3}
                         className="w-full bg-[#070F12] border border-[#003B46]/50 rounded-md p-3 text-gray-100 focus:border-[#00A3A9] outline-none"
                         placeholder="Enter your interview question here..."
@@ -1088,7 +713,7 @@ export default function QuestionManager() {
                           id="category"
                           name="category"
                           value={newQuestion.category}
-                          onChange={handleChange}
+                          onChange={(e) => setNewQuestion({ ...newQuestion, category: e.target.value })}
                           className="w-full bg-[#070F12] border border-[#003B46]/50 rounded-md p-2 text-gray-100 focus:border-[#00A3A9] outline-none"
                         >
                           {categories
@@ -1109,7 +734,7 @@ export default function QuestionManager() {
                           id="difficulty"
                           name="difficulty"
                           value={newQuestion.difficulty}
-                          onChange={handleChange}
+                          onChange={(e) => setNewQuestion({ ...newQuestion, difficulty: e.target.value })}
                           className="w-full bg-[#070F12] border border-[#003B46]/50 rounded-md p-2 text-gray-100 focus:border-[#00A3A9] outline-none"
                         >
                           {difficulties
@@ -1152,7 +777,11 @@ export default function QuestionManager() {
                         />
                         <button
                           type="button"
-                          onClick={addTag}
+                          onClick={() => {
+                            if (newQuestion.tags.includes(newTag) || !newTag.trim()) return;
+                            setNewQuestion({ ...newQuestion, tags: [...newQuestion.tags, newTag] });
+                            setNewTag("");
+                          }}
                           disabled={!newTag.trim()}
                           className={`px-3 py-2 rounded ${
                             newTag.trim()
@@ -1170,8 +799,8 @@ export default function QuestionManager() {
                       <button
                         type="button"
                         onClick={() => {
-                          setIsAddingQuestion(false)
-                          setIsEditingQuestion(null)
+                          setIsAddingQuestion(false);
+                          setIsEditingQuestion(null);
                         }}
                         className="px-4 py-2 border border-[#003B46]/50 rounded-md hover:bg-[#003B46]/20 transition-colors"
                       >
@@ -1246,5 +875,5 @@ export default function QuestionManager() {
         </div>
       </footer>
     </div>
-  )
+  );
 }
