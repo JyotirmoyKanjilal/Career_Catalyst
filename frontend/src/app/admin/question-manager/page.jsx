@@ -76,68 +76,56 @@ export default function QuestionManager() {
     }
   };
 
-  // Toggle saved status of a question
-  const toggleSaved = (id) => {
-    setQuestions(
-      questions.map((q) =>
-        q._id === id ? { ...q, saved: !q.saved } : q
-      )
-    );
+  // Handle form submission for adding or editing a question
+  const handleQuestionAddSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setErrorMessage("");
+
+    // Validate form
+    if (!newQuestion.question.trim()) {
+      setErrorMessage("Question text is required");
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      if (isEditingQuestion) {
+        // Update existing question
+        const response = await axios.put(`${API_URL}/questions/update/${isEditingQuestion}`, newQuestion);
+        setQuestions(questions.map((q) => (q._id === isEditingQuestion ? response.data : q)));
+        setSuccessMessage("Question updated successfully!");
+      } else {
+        // Add new question
+        const response = await axios.post(`${API_URL}/questions/add`, newQuestion);
+        setQuestions([...questions, response.data]);
+        setSuccessMessage("Question added successfully!");
+      }
+    } catch (error) {
+      console.error("Error submitting question:", error);
+      setErrorMessage("Failed to submit question. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+      setIsAddingQuestion(false);
+      setIsEditingQuestion(null);
+      setNewQuestion({
+        question: "",
+        category: "Behavioral",
+        difficulty: "Medium",
+        tags: [],
+      });
+
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 3000);
+    }
   };
-
-  // Filter and sort questions
-  const filteredQuestions = questions.filter((q) => {
-    const matchesCategory = selectedCategory === "All" || q.category === selectedCategory;
-    const matchesDifficulty = selectedDifficulty === "All" || q.difficulty === selectedDifficulty;
-    const matchesTags = selectedTags.every((tag) => q.tags.includes(tag));
-    const matchesSearch = q.question.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesDifficulty && matchesTags && matchesSearch;
-  });
-
-  const sortedQuestions = filteredQuestions.sort((a, b) => {
-    if (sortBy === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
-    if (sortBy === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
-    if (sortBy === "mostViewed") return b.views - a.views;
-    if (sortBy === "mostAnswers") return b.answers - a.answers;
-    if (sortBy === "highestRated") return b.rating - a.rating;
-    return 0;
-  });
 
   // Fetch questions on component mount
   useEffect(() => {
     fetchQuestions();
   }, []);
-
-  const handleQuestionAddSubmit = () => {
-    if (isEditingQuestion) {
-      // Update existing question
-      axios
-        .put(`${API_URL}/questions/update/${isEditingQuestion}`, newQuestion)
-        .then(() => {
-          setSuccessMessage("Question updated successfully!");
-          setIsAddingQuestion(false);
-          setIsEditingQuestion(null);
-          fetchQuestions();
-        })
-        .catch((error) => {
-          console.error("Error updating question:", error);
-          setErrorMessage("Failed to update question. Please try again later.");
-        });
-    } else {
-      // Add new question
-      axios
-        .post(`${API_URL}/questions/add`, newQuestion)
-        .then(() => {
-          setSuccessMessage("Question added successfully!");
-          setIsAddingQuestion(false);
-          fetchQuestions();
-        })
-        .catch((error) => {
-          console.error("Error adding question:", error);
-          setErrorMessage("Failed to add question. Please try again later.");
-        });
-    }
-  }
 
   return (
     <div className="min-h-screen bg-[#070F12] text-gray-100 overflow-hidden">
