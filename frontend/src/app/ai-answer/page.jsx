@@ -25,7 +25,7 @@ import {
   MessageSquare,
   Zap,
 } from "lucide-react"
-import { generateAnswer } from "@/app/ai-answer/actions"
+import { generateAnswer } from "./actions"
 
 export default function AIAnswer() {
   // State for user input and AI responses

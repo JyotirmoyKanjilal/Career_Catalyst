@@ -1,5 +1,5 @@
 "use server"
-"use client"
+  
 
 export async function generateAnswer(question, settings) {
   // In a real application, this would call an AI API like OpenAI
