@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ThreadView } from "@/components/thread-view";
-import { NewThreadForm } from "@/components/new-thread-form";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// import { ThreadView } from "@/components/thread-view";
 import { PlusCircle, MessageSquare, Users } from "lucide-react";
+import { NewThreadForm } from "./new-thread-form";
+import { Button } from "./ui/button";
+import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 
 // Sample data - in a real app, this would come from a database
 export const sampleThreads = [
