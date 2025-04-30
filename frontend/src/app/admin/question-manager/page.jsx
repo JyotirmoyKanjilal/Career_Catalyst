@@ -33,22 +33,125 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function QuestionManager() {
   // State for questions and UI
-  const [questions, setQuestions] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedDifficulty, setSelectedDifficulty] = useState("All");
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [selectedCollection, setSelectedCollection] = useState(null);
-  const [showFilters, setShowFilters] = useState(false);
-  const [showCollections, setShowCollections] = useState(false);
-  const [isAddingQuestion, setIsAddingQuestion] = useState(false);
-  const [isEditingQuestion, setIsEditingQuestion] = useState(null);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
-  const [sortBy, setSortBy] = useState("newest");
-  const [scrolled, setScrolled] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [questions, setQuestions] = useState([
+    {
+      id: 1,
+      question: "Tell me about yourself",
+      category: "Behavioral",
+      difficulty: "Easy",
+      tags: ["Common", "Introduction", "All Levels"],
+      saved: true,
+      views: 1245,
+      answers: 32,
+      rating: 4.8,
+      createdAt: "2023-05-15",
+    },
+    {
+      id: 2,
+      question: "What is your greatest weakness?",
+      category: "Behavioral",
+      difficulty: "Medium",
+      tags: ["Common", "Self-Assessment"],
+      saved: false,
+      views: 987,
+      answers: 28,
+      rating: 4.5,
+      createdAt: "2023-06-02",
+    },
+    {
+      id: 3,
+      question: "Explain the concept of RESTful APIs",
+      category: "Technical",
+      difficulty: "Medium",
+      tags: ["Web Development", "Backend", "API"],
+      saved: true,
+      views: 756,
+      answers: 15,
+      rating: 4.7,
+      createdAt: "2023-06-10",
+    },
+    {
+      id: 4,
+      question: "How would you implement a binary search tree?",
+      category: "Technical",
+      difficulty: "Hard",
+      tags: ["Data Structures", "Algorithms", "Computer Science"],
+      saved: false,
+      views: 543,
+      answers: 12,
+      rating: 4.9,
+      createdAt: "2023-06-15",
+    },
+    {
+      id: 5,
+      question: "Describe a time when you had to deal with a difficult team member",
+      category: "Behavioral",
+      difficulty: "Medium",
+      tags: ["Teamwork", "Conflict Resolution"],
+      saved: true,
+      views: 876,
+      answers: 24,
+      rating: 4.6,
+      createdAt: "2023-06-20",
+    },
+    {
+      id: 6,
+      question: "What are closures in JavaScript?",
+      category: "Technical",
+      difficulty: "Medium",
+      tags: ["JavaScript", "Frontend", "Programming Concepts"],
+      saved: false,
+      views: 654,
+      answers: 18,
+      rating: 4.7,
+      createdAt: "2023-06-25",
+    },
+    {
+      id: 7,
+      question: "How do you handle stress and pressure?",
+      category: "Behavioral",
+      difficulty: "Easy",
+      tags: ["Stress Management", "Self-Assessment"],
+      saved: true, 
+      views: 789,
+      answers: 22,
+      rating: 4.4,
+      createdAt: "2023-07-01",
+    },
+    {
+      id: 8,
+      question: "Explain the difference between HTTP and HTTPS",
+      category: "Technical",
+      difficulty: "Easy",
+      tags: ["Networking", "Web Development", "Security"],
+      saved: false,
+      views: 567,
+      answers: 14,
+      rating: 4.6,
+      createdAt: "2023-07-05",
+    },
+  ])
+
+  // UI state
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("All")
+  const [selectedDifficulty, setSelectedDifficulty] = useState("All")
+  const [selectedTags, setSelectedTags] = useState([])
+  const [showFilters, setShowFilters] = useState(false)
+  const [isAddingQuestion, setIsAddingQuestion] = useState(false)
+  const [isEditingQuestion, setIsEditingQuestion] = useState(null)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null)
+  const [sortBy, setSortBy] = useState("newest")
+  const [scrolled, setScrolled] = useState(false)
+  const [isAddingCollection, setIsAddingCollection] = useState(false)
+  const [newCollectionName, setNewCollectionName] = useState("")
+  const [collections, setCollections] = useState([
+    { id: 1, name: "Favorites", count: 3 },
+    { id: 2, name: "Technical Interview Prep", count: 5 },
+    { id: 3, name: "Behavioral Questions", count: 4 },
+  ])
+  const [selectedCollection, setSelectedCollection] = useState(null)
+  const [showCollections, setShowCollections] = useState(false)
   const [newQuestion, setNewQuestion] = useState({
     question: "",
     category: "Behavioral",
