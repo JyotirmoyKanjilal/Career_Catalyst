@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader } from "./ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Badge } from "./ui/badge";
+import { Textarea } from "./ui/textarea.jsx";
 import { ArrowLeft, Send, Star, ThumbsUp, MessageSquare } from "lucide-react";
 
-export function ThreadView({ thread, comments, onBack }) {
+export  function ThreadView({ thread, comments, onBack }) {
   const [newComment, setNewComment] = useState("");
   const [likedComments, setLikedComments] = useState({});
   const [commentLikes, setCommentLikes] = useState({

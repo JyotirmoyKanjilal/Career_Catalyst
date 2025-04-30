@@ -1,8 +1,8 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "./ui/badge";
+import { Card, CardContent, CardFooter } from "./ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { MessageSquare, Eye, Star } from "lucide-react";
 
 export function ThreadList({ threads, onThreadClick }) {

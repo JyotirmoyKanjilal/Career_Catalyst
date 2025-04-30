@@ -1,11 +1,11 @@
-"use client";
-
-import { useState, useEffect } from "react";
-// import { ThreadView } from "@/components/thread-view";
-import { PlusCircle, MessageSquare, Users } from "lucide-react";
-import { NewThreadForm } from "./new-thread-form";
-import { Button } from "./ui/button";
-import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
+"use client"
+import { useState, useEffect } from "react"
+import { ThreadList } from "./thread-list"
+import { ThreadView } from "./thread-view"
+import { NewThreadForm } from "./new-thread-form"
+import { Button } from "./ui/button"
+import { Tabs, TabsList, TabsTrigger } from "./ui/tabs"
+import { PlusCircle, MessageSquare, Users } from "lucide-react"
 
 // Sample data - in a real app, this would come from a database
 export const sampleThreads = [
@@ -15,14 +15,14 @@ export const sampleThreads = [
     author: {
       name: "Dr. Jane Smith",
       role: "expert",
-      avatar: "/images/default-avatar.png", // Replace with a valid image path
+      avatar: "/placeholder.svg?height=40&width=40"
     },
     date: "2 hours ago",
     replies: 8,
     views: 124,
     content:
       "I've been interviewing candidates for senior positions and noticed many struggle with system design questions. What approaches do you recommend for tackling these types of questions effectively?",
-    tags: ["system-design", "senior-level", "interviews"],
+    tags: ["system-design", "senior-level", "interviews"]
   },
   {
     id: "2",
@@ -30,14 +30,14 @@ export const sampleThreads = [
     author: {
       name: "Mike Johnson",
       role: "student",
-      avatar: "/images/default-avatar.png",
+      avatar: "/placeholder.svg?height=40&width=40"
     },
     date: "1 day ago",
     replies: 12,
     views: 256,
     content:
       "I have an upcoming interview for a frontend position and I'm struggling with closure-related questions. Can anyone share common questions and how to approach them?",
-    tags: ["javascript", "closures", "frontend"],
+    tags: ["javascript", "closures", "frontend"]
   },
   {
     id: "3",
@@ -45,14 +45,14 @@ export const sampleThreads = [
     author: {
       name: "Sarah Chen",
       role: "expert",
-      avatar: "/images/default-avatar.png",
+      avatar: "/placeholder.svg?height=40&width=40"
     },
     date: "3 days ago",
     replies: 5,
     views: 98,
     content:
       "For those preparing for product management interviews, I'd like to share some insights on behavioral questions that frequently come up and strategies to answer them effectively.",
-    tags: ["product-management", "behavioral", "interviews"],
+    tags: ["product-management", "behavioral", "interviews"]
   },
   {
     id: "4",
@@ -60,16 +60,16 @@ export const sampleThreads = [
     author: {
       name: "Alex Rivera",
       role: "student",
-      avatar: "/images/default-avatar.png",
+      avatar: "/placeholder.svg?height=40&width=40"
     },
     date: "5 days ago",
     replies: 15,
     views: 310,
     content:
       "I keep failing technical interviews because I can't solve dynamic programming problems efficiently. Any tips or resources that helped you master this topic?",
-    tags: ["algorithms", "dynamic-programming", "technical"],
-  },
-];
+    tags: ["algorithms", "dynamic-programming", "technical"]
+  }
+]
 
 export const sampleComments = [
   {
@@ -78,11 +78,11 @@ export const sampleComments = [
     author: {
       name: "Robert Chen",
       role: "expert",
-      avatar: "/images/default-avatar.png",
+      avatar: "/placeholder.svg?height=40&width=40"
     },
     date: "1 hour ago",
     content:
-      "Start by understanding the requirements thoroughly. Ask clarifying questions before diving into the solution. Then, identify the core components, discuss scalability considerations, and explain your design choices.",
+      "Start by understanding the requirements thoroughly. Ask clarifying questions before diving into the solution. Then, identify the core components, discuss scalability considerations, and explain your design choices."
   },
   {
     id: "c2",
@@ -90,11 +90,11 @@ export const sampleComments = [
     author: {
       name: "Emily Wong",
       role: "student",
-      avatar: "/images/default-avatar.png",
+      avatar: "/placeholder.svg?height=40&width=40"
     },
     date: "45 minutes ago",
     content:
-      "I've found the STAR method helpful even for system design: Situation, Task, Action, Result. Describe the problem, identify what needs to be built, explain your approach, and discuss the outcome and potential improvements.",
+      "I've found the STAR method helpful even for system design: Situation, Task, Action, Result. Describe the problem, identify what needs to be built, explain your approach, and discuss the outcome and potential improvements."
   },
   {
     id: "c3",
@@ -102,104 +102,69 @@ export const sampleComments = [
     author: {
       name: "Dr. Jane Smith",
       role: "expert",
-      avatar: "/images/default-avatar.png",
+      avatar: "/placeholder.svg?height=40&width=40"
     },
     date: "30 minutes ago",
     content:
-      "Great points! I'd add that candidates should practice drawing diagrams. Visual representation of your system makes it easier for interviewers to follow your thought process.",
-  },
-];
-
-export function ThreadList({ threads, onThreadClick }) {
-  return (
-    <div>
-      {threads.map((thread) => (
-        <div
-          key={thread.id}
-          onClick={() => onThreadClick(thread)}
-          className="cursor-pointer p-4 border-b border-gray-200 hover:bg-gray-100"
-        >
-          <h3 className="font-bold">{thread.title}</h3>
-          <p className="text-sm text-gray-500">{thread.content}</p>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-export function ThreadView({ thread, comments, onBack }) {
-  return (
-    <div>
-      <button onClick={onBack} className="mb-4 text-blue-500">Back to Threads</button>
-      <h2 className="text-xl font-bold">{thread.title}</h2>
-      <p className="text-gray-700">{thread.content}</p>
-      <div className="mt-4">
-        <h3 className="font-semibold">Comments:</h3>
-        {comments.map((comment) => (
-          <div key={comment.id} className="mt-2 p-2 border rounded">
-            <p className="text-sm text-gray-500">{comment.author.name} - {comment.date}</p>
-            <p>{comment.content}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+      "Great points! I'd add that candidates should practice drawing diagrams. Visual representation of your system makes it easier for interviewers to follow your thought process."
+  }
+]
 
 export function ForumPage() {
-  const [activeView, setActiveView] = useState("list");
-  const [selectedThread, setSelectedThread] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [activeView, setActiveView] = useState("list")
+  const [selectedThread, setSelectedThread] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isAnimating, setIsAnimating] = useState(false)
 
   useEffect(() => {
+    // Simulate loading data
     const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
+      setIsLoading(false)
+    }, 800)
+    return () => clearTimeout(timer)
+  }, [])
 
-  const handleThreadClick = (thread) => {
-    setIsAnimating(true);
-    setIsLoading(true);
-    setSelectedThread(thread);
+  const handleThreadClick = thread => {
+    setIsAnimating(true)
+    setIsLoading(true)
+    setSelectedThread(thread)
     setTimeout(() => {
-      setActiveView("thread");
-      setIsLoading(false);
-      setTimeout(() => setIsAnimating(false), 300);
-    }, 300);
-  };
+      setActiveView("thread")
+      setIsLoading(false)
+      setTimeout(() => setIsAnimating(false), 300)
+    }, 300)
+  }
 
   const handleBackToList = () => {
-    setIsAnimating(true);
-    setIsLoading(true);
+    setIsAnimating(true)
+    setIsLoading(true)
     setTimeout(() => {
-      setActiveView("list");
-      setSelectedThread(null);
-      setIsLoading(false);
-      setTimeout(() => setIsAnimating(false), 300);
-    }, 300);
-  };
+      setActiveView("list")
+      setSelectedThread(null)
+      setIsLoading(false)
+      setTimeout(() => setIsAnimating(false), 300)
+    }, 300)
+  }
 
   const handleNewThread = () => {
-    setIsAnimating(true);
-    setIsLoading(true);
+    setIsAnimating(true)
+    setIsLoading(true)
     setTimeout(() => {
-      setActiveView("new");
-      setIsLoading(false);
-      setTimeout(() => setIsAnimating(false), 300);
-    }, 300);
-  };
+      setActiveView("new")
+      setIsLoading(false)
+      setTimeout(() => setIsAnimating(false), 300)
+    }, 300)
+  }
 
   const handleThreadCreated = () => {
-    setIsAnimating(true);
-    setIsLoading(true);
+    setIsAnimating(true)
+    setIsLoading(true)
     setTimeout(() => {
-      setActiveView("list");
-      setIsLoading(false);
-      setTimeout(() => setIsAnimating(false), 300);
-    }, 300);
-  };
+      setActiveView("list")
+      setIsLoading(false)
+      setTimeout(() => setIsAnimating(false), 300)
+    }, 300)
+  }
 
   return (
     <div className="container mx-auto py-8 px-4 md:px-6 animate-fade-in">
@@ -209,7 +174,9 @@ export function ForumPage() {
             <div className="h-10 w-10 rounded-full bg-gradient-to-r from-darkTeal to-brightTeal flex items-center justify-center">
               <MessageSquare className="h-5 w-5 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-white">Interview Questions Forum</h1>
+            <h1 className="text-3xl font-bold text-white">
+              Interview Questions Forum
+            </h1>
           </div>
           <Button
             onClick={handleNewThread}
@@ -223,16 +190,28 @@ export function ForumPage() {
         <div className="animate-fade-up" style={{ animationDelay: "0.1s" }}>
           <Tabs defaultValue="all" className="w-full">
             <TabsList className="mb-4 bg-darkTeal">
-              <TabsTrigger value="all" className="data-[state=active]:bg-brightTeal data-[state=active]:text-white">
+              <TabsTrigger
+                value="all"
+                className="data-[state=active]:bg-brightTeal data-[state=active]:text-white transition-all duration-300"
+              >
                 All Topics
               </TabsTrigger>
-              <TabsTrigger value="technical" className="data-[state=active]:bg-brightTeal data-[state=active]:text-white">
+              <TabsTrigger
+                value="technical"
+                className="data-[state=active]:bg-brightTeal data-[state=active]:text-white transition-all duration-300"
+              >
                 Technical
               </TabsTrigger>
-              <TabsTrigger value="behavioral" className="data-[state=active]:bg-brightTeal data-[state=active]:text-white">
+              <TabsTrigger
+                value="behavioral"
+                className="data-[state=active]:bg-brightTeal data-[state=active]:text-white transition-all duration-300"
+              >
                 Behavioral
               </TabsTrigger>
-              <TabsTrigger value="system-design" className="data-[state=active]:bg-brightTeal data-[state=active]:text-white">
+              <TabsTrigger
+                value="system-design"
+                className="data-[state=active]:bg-brightTeal data-[state=active]:text-white transition-all duration-300"
+              >
                 System Design
               </TabsTrigger>
             </TabsList>
@@ -246,30 +225,53 @@ export function ForumPage() {
         ) : (
           <>
             {activeView === "list" && (
-              <div className={`${isAnimating ? "opacity-0" : "opacity-100"} transition-opacity duration-300`}>
-                <ThreadList threads={sampleThreads} onThreadClick={handleThreadClick} />
+              <div
+                className={`${
+                  isAnimating ? "opacity-0" : "opacity-100"
+                } transition-opacity duration-300`}
+              >
+                <ThreadList
+                  threads={sampleThreads}
+                  onThreadClick={handleThreadClick}
+                />
               </div>
             )}
 
             {activeView === "thread" && selectedThread && (
-              <div className={`${isAnimating ? "opacity-0" : "opacity-100"} transition-opacity duration-300`}>
+              <div
+                className={`${
+                  isAnimating ? "opacity-0" : "opacity-100"
+                } transition-opacity duration-300`}
+              >
                 <ThreadView
                   thread={selectedThread}
-                  comments={sampleComments.filter((c) => c.threadId === selectedThread.id)}
+                  comments={sampleComments.filter(
+                    c => c.threadId === selectedThread.id
+                  )}
                   onBack={handleBackToList}
                 />
               </div>
             )}
 
             {activeView === "new" && (
-              <div className={`${isAnimating ? "opacity-0" : "opacity-100"} transition-opacity duration-300`}>
-                <NewThreadForm onCancel={handleBackToList} onSubmit={handleThreadCreated} />
+              <div
+                className={`${
+                  isAnimating ? "opacity-0" : "opacity-100"
+                } transition-opacity duration-300`}
+              >
+                <NewThreadForm
+                  onCancel={handleBackToList}
+                  onSubmit={handleThreadCreated}
+                />
               </div>
             )}
           </>
         )}
 
-        <div className="mt-8 p-6 bg-darkTeal rounded-lg text-white animate-fade-up" style={{ animationDelay: "0.3s" }}>
+        <div
+          className="mt-8 p-6 bg-darkTeal rounded-lg text-white animate-fade-up"
+          style={{ animationDelay: "0.3s" }}
+        >
           <div className="flex items-center gap-3 mb-4">
             <Users className="h-5 w-5 text-lightTeal" />
             <h2 className="text-xl font-semibold">Community Stats</h2>
@@ -291,5 +293,5 @@ export function ForumPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }
