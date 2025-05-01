@@ -250,7 +250,7 @@ export default function Home() {
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-4 lg:space-x-8">
               {[
-                { name: "Features", href: "#features", id: "features" },
+                { name: "Q & A", href: "./answers", id: "" },
                 { name: "How It Works", href: "#how-it-works", id: "how-it-works" },
                 { name: "Examples", href: "#examples", id: "examples" },
                 { name: "About Us", href: "/about", id: "" },
@@ -866,10 +866,10 @@ export default function Home() {
                 <ul className="mt-3 sm:mt-4 space-y-2 sm:space-y-4">
                   <li>
                     <Link
-                      href="#features"
+                      href="/answers"
                       className="text-sm sm:text-base text-gray-400 hover:text-white transition-colors duration-300"
                     >
-                      Features
+                      Q & A
                     </Link>
                   </li>
                   <li>
