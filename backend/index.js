@@ -1,9 +1,11 @@
 require('dotenv').config();
 
+
 // import express
 const express = require('express');
 const UserRouter = require('./routers/UserRouter');
 const QuestionRouter = require('./routers/questionRouter');
+const GeminiRouter = require('./routers/geminiRouter');
 const cors =require('cors');
 
 
@@ -19,6 +21,7 @@ app.use(cors({
 app.use(express.json());
 app.use('/user',UserRouter);
 app.use('/questions',QuestionRouter);
+app.use('/gemini',GeminiRouter);
 
 // endpoint or route
 app.get('/',(req,res) => {
