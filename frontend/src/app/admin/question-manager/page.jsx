@@ -31,6 +31,16 @@ import {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+const containerVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.1 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+};
+
 export default function QuestionManager() {
   // State for questions and UI
   const [questions, setQuestions] = useState([
@@ -131,6 +141,9 @@ export default function QuestionManager() {
       createdAt: "2023-07-05",
     },
   ])
+  const [successMessage, setSuccessMessage] = useState(""); // Add this line
+  const [errorMessage, setErrorMessage] = useState(""); // Assuming errorMessage is already defined
+  const [isSubmitting, setIsSubmitting] = useState(false); // Assuming this is already defined
 
   // UI state
   const [searchTerm, setSearchTerm] = useState("")
@@ -229,6 +242,25 @@ export default function QuestionManager() {
   useEffect(() => {
     fetchQuestions();
   }, []);
+
+  // Define sortedQuestions based on filters and sorting
+  const filteredQuestions = questions.filter((question) => {
+    const matchesCategory = selectedCategory === "All" || question.category === selectedCategory;
+    const matchesDifficulty = selectedDifficulty === "All" || question.difficulty === selectedDifficulty;
+    const matchesTags = selectedTags.every((tag) => question.tags.includes(tag));
+    const matchesSearch = question.question.toLowerCase().includes(searchTerm.toLowerCase());
+
+    return matchesCategory && matchesDifficulty && matchesTags && matchesSearch;
+  });
+
+  const sortedQuestions = filteredQuestions.sort((a, b) => {
+    if (sortBy === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
+    if (sortBy === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
+    if (sortBy === "mostViewed") return b.views - a.views;
+    if (sortBy === "mostAnswers") return b.answers - a.answers;
+    if (sortBy === "highestRated") return b.rating - a.rating;
+    return 0;
+  });
 
   return (
     <div className="min-h-screen bg-[#070F12] text-gray-100 overflow-hidden">

@@ -251,8 +251,8 @@ export default function Home() {
             <nav className="hidden md:flex items-center space-x-4 lg:space-x-8">
               {[
                 { name: "Q & A", href: "./answers", id: "" },
-                { name: "How It Works", href: "#how-it-works", id: "how-it-works" },
-                { name: "Examples", href: "#examples", id: "examples" },
+                { name: "Discussions", href: "./forum", id: "" },
+                { name: "Feedback", href: "./student-feedback", id: "" },
                 { name: "About Us", href: "/about", id: "" },
                 { name: "Contact Us", href: "/contact", id: "" },
               ].map((item) => (
@@ -311,9 +311,9 @@ export default function Home() {
         >
           <div className="px-4 pt-2 pb-3 space-y-1 sm:px-3 max-h-[calc(100vh-4rem)] overflow-y-auto">
             {[
-              { name: "Features", href: "#features", id: "features" },
-              { name: "How It Works", href: "#how-it-works", id: "how-it-works" },
-              { name: "Examples", href: "#examples", id: "examples" },
+              { name: "Q & A", href: "./answers", id: "" },
+              { name: "Discussions", href: "./forum", id: "" },
+              { name: "Feedback", href: "./student-feedback", id: "" },
               { name: "About Us", href: "/about", id: "" },
               { name: "Contact Us", href: "/contact", id: "" },
             ].map((item) => (
