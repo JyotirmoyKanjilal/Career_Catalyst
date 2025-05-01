@@ -1,5 +1,4 @@
-import FeedbackModule from "@/components/feedback-module"
-
+import FeedbackModule from "../../components/feedback-module";
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#070F12] text-white">

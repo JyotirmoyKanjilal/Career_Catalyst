@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "./ui/button";
+import { Textarea } from "./ui/textarea";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 import { Star } from "lucide-react";
 
 export default function FeedbackForm({ answerId, onSubmit }) {

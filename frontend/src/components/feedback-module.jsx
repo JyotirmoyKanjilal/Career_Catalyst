@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { Card } from "./ui/card";
 import StudentAnswer from "./student-answer";
 import FeedbackForm from "./feedback-form";
 import { Check, MessageSquare, Users } from "lucide-react";
