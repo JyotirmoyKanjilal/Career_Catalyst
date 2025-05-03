@@ -206,8 +206,8 @@ export default function AIAnswer() {
 
     const timer = setTimeout(() => {
       setTypingEffect(fullAnswer.substring(0, typingIndex + 1))
-      setTypingIndex(typingIndex + 1)
-    }, 10) // Adjust speed as needed
+      setTypingIndex(typingIndex + 10)
+    }, 1) // Adjust speed as needed
 
     return () => clearTimeout(timer)
   }, [fullAnswer, typingIndex])

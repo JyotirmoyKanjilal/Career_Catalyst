@@ -5,7 +5,7 @@ export async function generateAnswer(question, settings) {
   // In a real application, this would call an AI API like OpenAI
   // For demo purposes, we'll simulate a response based on the question
 
-  await new Promise((resolve) => setTimeout(resolve, 2000)) // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 200)) // Simulate API delay
 
   // Example answers based on common questions
   let answer = ""
