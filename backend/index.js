@@ -8,6 +8,7 @@ const QuestionRouter = require('./routers/questionRouter');
 const GeminiRouter = require('./routers/geminiRouter');
 const feedbackRouter = require('./routers/feedbackRouter');
 const discussionRouter = require('./routers/discussionRouter');
+const aiAnswerRouter = require('./routers/ai-answerRouter');
 const cors =require('cors');
 
 
@@ -26,6 +27,7 @@ app.use('/questions',QuestionRouter);
 app.use('/gemini',GeminiRouter);
 app.use('/api/feedback', feedbackRouter);
 app.use('/api/discussion', discussionRouter);
+app.use('/api/ai-answer', aiAnswerRouter);
 
 // endpoint or route
 app.get('/',(req,res) => {
