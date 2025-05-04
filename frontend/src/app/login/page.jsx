@@ -7,7 +7,6 @@ import { Briefcase, Mail, Lock, Eye, EyeOff, ArrowRight, Github, Twitter } from 
 import toast from "react-hot-toast";
 import * as Yup from "yup";
 import { Formik, useFormik } from "formik"
-import { useRouter } from "next/navigation"
 import React from "react"
 import axios from "axios"
 
