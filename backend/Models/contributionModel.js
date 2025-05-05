@@ -9,7 +9,7 @@ const contributionSchema = new Schema({
   upvotes: { type: Number, default: 0 }, // Number of upvotes
   downvotes: { type: Number, default: 0 }, // Number of downvotes
   views: { type: Number, default: 0 }, // Number of views
-  user: { type: String, required: true }, // User who submitted the contribution
+  user: { type: Schema.Types.ObjectId, ref: 'users', required: true }, // Reference to the user who submitted the contribution
 });
 
 module.exports = model('contributions', contributionSchema);

@@ -27,7 +27,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Add a new contribution
-router.post('/add', async (req, res) => {
+router.post('/add',  async (req, res) => {
   try {
     const { questionId, question, answer, user } = req.body;
 
@@ -41,6 +41,8 @@ router.post('/add', async (req, res) => {
     const savedContribution = await newContribution.save();
     res.status(201).json(savedContribution);
   } catch (error) {
+    console.log(error);
+    
     res.status(500).json({ error: 'Failed to add contribution' });
   }
 });
