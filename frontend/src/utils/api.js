@@ -73,3 +73,45 @@ export async function loginUser(credentials) {
 export function logoutUser() {
   localStorage.removeItem('user');
 }
+
+
+// DISCUSSION API CALLS
+// get all discussions
+export async function fetchDiscussions() {
+  try {
+    const response = await api.get('/api/discussion/getall');
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to fetch discussions");
+  }
+}
+
+// create a new discussion
+export async function createDiscussion(discussion) {
+  try {
+    const response = await api.post('/api/discussion/create', discussion);
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to create discussion");
+  }
+}
+
+// get a specific discussion by ID
+export async function fetchDiscussionById(id) {
+  try {
+    const response = await api.get(`/api/discussion/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to fetch discussion by ID");
+  }
+}
+
+// post an answer to a discussion
+export async function postAnswerToDiscussion(id, answer) {
+  try {
+    const response = await api.post(`/api/discussion/${id}/answer`, answer);
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to post answer to discussion");
+  }
+}
