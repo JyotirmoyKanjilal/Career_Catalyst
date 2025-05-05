@@ -25,7 +25,7 @@ import {
   FileText,
   Eye,
 } from "lucide-react"
-import { submitContribution, getQuestions, getContributions } from "contribution"
+import { submitContribution, getQuestions, getContributions } from "./actions";
 
 export default function Contribution() {
   // State for contributions and UI
@@ -254,7 +254,7 @@ export default function Contribution() {
     try {
       // Call server action to submit contribution
       const result = await submitContribution({
-        questionId: selectedQuestion.id,
+        questionId: selectedQuestion._id,
         answer: contributionText,
         isEditing: isEditingContribution !== null,
         contributionId: isEditingContribution,
@@ -281,7 +281,7 @@ export default function Contribution() {
           // Add new contribution
           const newContribution = {
             id: Date.now(), // Temporary ID
-            questionId: selectedQuestion.id,
+            questionId: selectedQuestion._id,
             question: selectedQuestion.question,
             answer: contributionText,
             timestamp: new Date().toISOString(),
@@ -323,7 +323,7 @@ export default function Contribution() {
 
   // Edit contribution
   const editContribution = (contribution) => {
-    const question = questions.find((q) => q.id === contribution.questionId)
+    const question = questions.find((q) => q._id === contribution.questionId)
     setSelectedQuestion(question)
     setContributionText(contribution.answer)
     setIsEditingContribution(contribution.id)
@@ -773,10 +773,10 @@ export default function Contribution() {
                 <motion.div className="space-y-4" initial="hidden" animate="visible" variants={containerVariants}>
                   {filteredQuestions.map((question) => (
                     <motion.div
-                      key={question.id}
+                      key={question._id}
                       variants={itemVariants}
                       className={`bg-[#070F12]/80 backdrop-blur-sm rounded-xl p-5 border transition-all duration-300 hover:shadow-[#00A3A9]/10 group ${
-                        selectedQuestion?.id === question.id
+                        selectedQuestion?._id === question._id
                           ? "border-[#00A3A9]/50 shadow-lg"
                           : "border-[#003B46]/20 hover:border-[#00A3A9]/30"
                       }`}
@@ -810,12 +810,12 @@ export default function Contribution() {
                         <button
                           onClick={() => setSelectedQuestion(question)}
                           className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
-                            selectedQuestion?.id === question.id
+                            selectedQuestion?._id === question._id
                               ? "bg-[#00A3A9] text-white"
                               : "bg-[#003B46]/50 hover:bg-[#006770] text-white"
                           }`}
                         >
-                          {selectedQuestion?.id === question.id ? "Selected" : "Answer This"}
+                          {selectedQuestion?._id === question._id ? "Selected" : "Answer This"}
                         </button>
                       </div>
                     </motion.div>

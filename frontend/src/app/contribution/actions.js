@@ -1,6 +1,3 @@
-"use server"
-"use client"
-
 // Mock data for questions
 const questionsData = [
   {
@@ -112,33 +109,34 @@ const contributionsData = [
   },
 ]
 
-// Get questions
+import { fetchQuestions, submitContribution as submitContributionAPI, fetchContributions } from "../../utils/api";
+
+// Get questions from backend
 export async function getQuestions() {
-  // In a real app, this would fetch from a database
-  await new Promise((resolve) => setTimeout(resolve, 500)) // Simulate API delay
-  return questionsData
+  return await fetchQuestions();
 }
 
-// Get contributions
-export async function getContributions() {
-  // In a real app, this would fetch from a database
-  await new Promise((resolve) => setTimeout(resolve, 500)) // Simulate API delay
-  return contributionsData
-}
-
-// Submit contribution
+// Submit contribution to backend
 export async function submitContribution({ questionId, answer, isEditing }) {
-  // In a real app, this would save to a database
-  await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate API delay
-
-  // Validate input
   if (!questionId || !answer.trim()) {
-    return { success: false, message: "Question ID and answer are required" }
+    return { success: false, message: "Question ID and answer are required" };
   }
+  try {
+    await submitContributionAPI({ questionId, answer });
+    return {
+      success: true,
+      message: isEditing ? "Contribution updated successfully" : "Contribution submitted successfully",
+    };
+  } catch (error) {
+    return { success: false, message: "Failed to submit contribution" };
+  }
+}
 
-  // Return success response
-  return {
-    success: true,
-    message: isEditing ? "Contribution updated successfully" : "Contribution submitted successfully",
+// Get contributions from backend
+export async function getContributions() {
+  try {
+    return await fetchContributions();
+  } catch (error) {
+    return [];
   }
 }

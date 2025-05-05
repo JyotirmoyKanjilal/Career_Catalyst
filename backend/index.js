@@ -9,7 +9,7 @@ const GeminiRouter = require('./routers/geminiRouter');
 const feedbackRouter = require('./routers/feedbackRouter');
 const discussionRouter = require('./routers/discussionRouter');
 const aiAnswerRouter = require('./routers/ai-answerRouter');
-const contributionModel = require('./Models/contributionModel');
+const contributionRouter = require('./routers/contributionRouter');
 const cors =require('cors');
 
 
@@ -24,12 +24,12 @@ app.use(cors({
 }))
 app.use(express.json());
 app.use('/user',UserRouter);
-app.use('/questions',QuestionRouter);
+app.use('/api/questions',QuestionRouter);
 app.use('/gemini',GeminiRouter);
 app.use('/api/feedback', feedbackRouter);
 app.use('/api/discussion', discussionRouter);
 app.use('/api/ai-answer', aiAnswerRouter);
-app.use('/api/contribution', contributionModel);
+app.use('/api/contributions', contributionRouter);
 // endpoint or route
 app.get('/',(req,res) => {
     res.send('response from express');

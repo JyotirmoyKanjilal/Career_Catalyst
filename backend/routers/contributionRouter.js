@@ -1,5 +1,6 @@
 const express = require('express');
 const Contribution = require('../Models/contributionModel');
+const verifyToken = require('../middlewares/verifyToken');
 
 const router = express.Router();
 
@@ -26,21 +27,22 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Add a new contribution
-router.post('/add', async (req, res) => {
+// Add a new contribution (user id from token)
+router.post('/add', verifyToken, async (req, res) => {
   try {
-    const { questionId, question, answer, user } = req.body;
+    const { questionId, question, answer } = req.body;
 
     const newContribution = new Contribution({
       questionId,
       question,
       answer,
-      user,
+      user: req.user._id, // user id from token
     });
 
     const savedContribution = await newContribution.save();
     res.status(201).json(savedContribution);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: 'Failed to add contribution' });
   }
 });
@@ -51,7 +53,7 @@ router.patch('/:id/status', async (req, res) => {
     const { status } = req.body;
 
     const updatedContribution = await Contribution.findByIdAndUpdate(
-      req.params.id,
+      req.params._id,
       { status },
       { new: true }
     );
@@ -66,15 +68,20 @@ router.patch('/:id/status', async (req, res) => {
   }
 });
 
-// Delete a contribution
-router.delete('/:id', async (req, res) => {
+// Delete a contribution (only by owner)
+router.delete('/:id', verifyToken, async (req, res) => {
   try {
-    const deletedContribution = await Contribution.findByIdAndDelete(req.params.id);
+    const contribution = await Contribution.findById(req.params._id);
 
-    if (!deletedContribution) {
+    if (!contribution) {
       return res.status(404).json({ error: 'Contribution not found' });
     }
 
+    if (contribution.user.toString() !== req.user._id) {
+      return res.status(403).json({ error: 'Not authorized to delete this contribution' });
+    }
+
+    await Contribution.findByIdAndDelete(req.params._id);
     res.json({ message: 'Contribution deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete contribution' });
