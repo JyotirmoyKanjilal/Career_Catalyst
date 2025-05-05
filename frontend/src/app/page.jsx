@@ -252,7 +252,7 @@ export default function Home() {
               {[
                 { name: "Q & A", href: "./answers", id: "" },
                 { name: "Discussions", href: "./forum", id: "" },
-                { name: "Feedback", href: "./student-feedback", id: "" },
+                { name: "Feedback", href: "./expert-feedback", id: "" },
                 { name: "About Us", href: "/about", id: "" },
                 { name: "Contact Us", href: "/contact", id: "" },
               ].map((item) => (
@@ -313,7 +313,7 @@ export default function Home() {
             {[
               { name: "Q & A", href: "./answers", id: "" },
               { name: "Discussions", href: "./forum", id: "" },
-              { name: "Feedback", href: "./student-feedback", id: "" },
+              { name: "Feedback", href: "./expert-feedback", id: "" },
               { name: "About Us", href: "/about", id: "" },
               { name: "Contact Us", href: "/contact", id: "" },
             ].map((item) => (

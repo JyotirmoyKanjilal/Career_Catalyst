@@ -177,6 +177,7 @@ export default function Contribution() {
 
       requestAnimationFrame(animate)
     }
+
     init()
     animate()
 
