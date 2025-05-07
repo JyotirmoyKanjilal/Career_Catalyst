@@ -395,26 +395,26 @@ export default function Home() {
               </p>
               <div className="mt-6 sm:mt-10 max-w-xl mx-auto lg:mx-0">
                 <div className="relative rounded-full shadow-lg shadow-[#00A3A9]/10">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  {/* <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <Search className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" aria-hidden="true" />
-                  </div>
-                  <input
+                  </div> */}
+                  {/* <input
                     type="text"
                     className="block w-full rounded-full border-2 border-[#003B46]/50 bg-[#070F12]/80 py-3 sm:py-4 pl-9 sm:pl-10 pr-16 sm:pr-20 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all text-sm sm:text-base"
                     placeholder="Ask an interview question..."
-                  />
+                  /> */}
                   <div className="absolute inset-y-0 right-0 flex items-center pr-2">
                     <button
                       type="button"
-                      className="inline-flex items-center rounded-full bg-[#006770] px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-white hover:bg-[#008C8B] focus:outline-none focus:ring-2 focus:ring-[#00A3A9] transition-all hover:scale-105 active:scale-95"
+                      className="inline-flex items-center rounded-full bg-[#006770] px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-white hover:bg-[#008C8B] focus:outline-none focus:ring-2 focus:ring-[#00A3A9] transition-all hover:scale-105 active:scale-95 "
                     >
                       Ask Now
                     </button>
                   </div>
                 </div>
-                <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-gray-500 px-2">
+                {/* <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-gray-500 px-2">
                   Try: "How do I answer 'Tell me about yourself'?" or "What are common React.js interview questions?"
-                </p>
+                </p> */}
               </div>
             </div>
             <div
