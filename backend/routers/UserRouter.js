@@ -5,18 +5,35 @@ require('dotenv').config();
 
 const router = express.Router();
 
-router.post('/add', (req, res) => {
-    console.log(req.body);
+router.post('/', async (req, res) => {
+    try {
+        // Find user by email
+        const user = await Model.findOne({ email: req.body.email });
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
 
-    new Model(req.body).save()
-        .then((result) => {
-            res.status(200).json(result)
-        }).catch((err) => {
-            console.log(err);
-            res.status(500).json(err)
+        // Compare passwords
+        const isValidPassword = await bcrypt.compare(req.body.password, user.password);
+        if (!isValidPassword) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
 
+        // Create session or token
+        res.json({
+            message: 'Login successful',
+            data: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
         });
 
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'Error during login', error: error.message });
+    }
 });
 
 router.get('/getall', (req, res) => {

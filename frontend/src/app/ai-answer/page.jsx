@@ -236,7 +236,6 @@ export default function AIAnswer() {
           prompt: question // Send the question as the prompt
         });
         
-      console.log(response.data);
       // Create a new answer object with the generated response
       const newAnswer = {
         id: Date.now(),
