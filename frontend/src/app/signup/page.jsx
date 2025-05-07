@@ -3,46 +3,64 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Briefcase, Mail, Lock, User, Eye, EyeOff, ArrowRight, CheckCircle, Github, Twitter } from "lucide-react"
-import toast from "react-hot-toast";
-import * as Yup from "yup";
-import { Formik, useFormik } from "formik"
-import { useRouter } from "next/navigation"
-import React from "react"
-import axios from "axios"
+import * as Yup from "yup"
+import { useFormik } from "formik"
 
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false)
-  const [formState, setFormState] = useState({
-    name: "",
-    email: "",
-    password: "",
-    agreeTerms: false,
-  })
   const [isLoading, setIsLoading] = useState(false)
   const [step, setStep] = useState(1)
   const [isSubmitted, setIsSubmitted] = useState(false)
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target
-    setFormState((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }))
-  }
+  // Validation schema using Yup
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Name is required"),
+    email: Yup.string().email("Invalid email address").required("Email is required"),
+    password: Yup.string().min(8, "Password must be at least 8 characters").required("Password is required"),
+    agreeTerms: Yup.boolean().oneOf([true], "You must agree to the terms"),
+  })
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
+  // Initialize Formik
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      password: "",
+      agreeTerms: false,
+    },
+    validationSchema,
+    onSubmit: async (values) => {
+      setIsLoading(true)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1500))
 
-    setIsLoading(false)
-    setIsSubmitted(true)
-  }
+      setIsLoading(false)
+      setIsSubmitted(true)
+    },
+  })
 
-  const nextStep = (e) => {
-    e.preventDefault()
+  // Handle next step
+  const handleNextStep = () => {
+    // Validate first step fields
+    const errors = {}
+    if (!formik.values.name) errors.name = "Name is required"
+    if (!formik.values.email) errors.email = "Email is required"
+    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(formik.values.email)) {
+      errors.email = "Invalid email address"
+    }
+
+    // Set touched for validation to show
+    formik.setTouched({
+      name: true,
+      email: true,
+    })
+
+    // Check if there are errors
+    if (!formik.values.name || !formik.values.email || errors.email) {
+      return
+    }
+
     setStep(2)
   }
 
@@ -96,7 +114,7 @@ export default function Signup() {
                 </Link>
               </div>
             ) : (
-              <form onSubmit={step === 1 ? nextStep : handleSubmit} className="space-y-6">
+              <form onSubmit={formik.handleSubmit} className="space-y-6">
                 {step === 1 ? (
                   <>
                     <div>
@@ -112,12 +130,15 @@ export default function Signup() {
                           name="name"
                           type="text"
                           autoComplete="name"
-                          required
-                          value={formState.name}
-                          onChange={handleChange}
-                          className="block w-full pl-10 pr-3 py-3 border-2 border-[#003B46]/50 rounded-md bg-[#070F12]/80 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
+                          value={formik.values.name}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          className={`block w-full pl-10 pr-3 py-3 border-2 ${formik.touched.name && formik.errors.name ? "border-red-500" : "border-[#003B46]/50"} rounded-md bg-[#070F12]/80 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all`}
                           placeholder="John Doe"
                         />
+                        {formik.touched.name && formik.errors.name && (
+                          <div className="text-red-500 text-sm mt-1">{formik.errors.name}</div>
+                        )}
                       </div>
                     </div>
 
@@ -134,18 +155,22 @@ export default function Signup() {
                           name="email"
                           type="email"
                           autoComplete="email"
-                          required
-                          value={formState.email}
-                          onChange={handleChange}
-                          className="block w-full pl-10 pr-3 py-3 border-2 border-[#003B46]/50 rounded-md bg-[#070F12]/80 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
+                          value={formik.values.email}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          className={`block w-full pl-10 pr-3 py-3 border-2 ${formik.touched.email && formik.errors.email ? "border-red-500" : "border-[#003B46]/50"} rounded-md bg-[#070F12]/80 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all`}
                           placeholder="you@example.com"
                         />
+                        {formik.touched.email && formik.errors.email && (
+                          <div className="text-red-500 text-sm mt-1">{formik.errors.email}</div>
+                        )}
                       </div>
                     </div>
 
                     <div>
                       <button
-                        type="submit"
+                        type="button"
+                        onClick={handleNextStep}
                         className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-[#006770] to-[#00A3A9] hover:from-[#00A3A9] hover:to-[#006770] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00A3A9] transition-all hover:scale-105 active:scale-95"
                       >
                         Continue
@@ -168,12 +193,15 @@ export default function Signup() {
                           name="password"
                           type={showPassword ? "text" : "password"}
                           autoComplete="new-password"
-                          required
-                          value={formState.password}
-                          onChange={handleChange}
-                          className="block w-full pl-10 pr-10 py-3 border-2 border-[#003B46]/50 rounded-md bg-[#070F12]/80 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
+                          value={formik.values.password}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          className={`block w-full pl-10 pr-10 py-3 border-2 ${formik.touched.password && formik.errors.password ? "border-red-500" : "border-[#003B46]/50"} rounded-md bg-[#070F12]/80 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all`}
                           placeholder="••••••••"
                         />
+                        {formik.touched.password && formik.errors.password && (
+                          <div className="text-red-500 text-sm mt-1">{formik.errors.password}</div>
+                        )}
                         <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                           <button
                             type="button"
@@ -189,14 +217,17 @@ export default function Signup() {
 
                     <div className="flex items-center">
                       <input
-                        id="agree-terms"
+                        id="agreeTerms"
                         name="agreeTerms"
                         type="checkbox"
-                        checked={formState.agreeTerms}
-                        onChange={handleChange}
-                        required
+                        checked={formik.values.agreeTerms}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
                         className="h-4 w-4 rounded border-gray-600 bg-[#070F12] text-[#00A3A9] focus:ring-[#00A3A9] focus:ring-offset-[#070F12]"
                       />
+                      {formik.touched.agreeTerms && formik.errors.agreeTerms && (
+                        <div className="text-red-500 text-sm mt-1">{formik.errors.agreeTerms}</div>
+                      )}
                       <label htmlFor="agree-terms" className="ml-2 block text-sm text-gray-300">
                         I agree to the{" "}
                         <Link href="#" className="text-[#00A3A9] hover:text-[#008C8B] transition-colors">
@@ -212,9 +243,9 @@ export default function Signup() {
                     <div>
                       <button
                         type="submit"
-                        disabled={isLoading || !formState.agreeTerms}
+                        disabled={isLoading || !formik.values.agreeTerms || !formik.isValid}
                         className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-[#006770] to-[#00A3A9] hover:from-[#00A3A9] hover:to-[#006770] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00A3A9] transition-all ${
-                          isLoading || !formState.agreeTerms
+                          isLoading || !formik.values.agreeTerms || !formik.isValid
                             ? "opacity-70 cursor-not-allowed"
                             : "hover:scale-105 active:scale-95"
                         }`}
@@ -381,4 +412,3 @@ export default function Signup() {
     </div>
   )
 }
-

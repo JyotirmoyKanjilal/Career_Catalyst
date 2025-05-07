@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Model = require('../Models/SignUpModel');
-const bcrypt = require('bcrypt');
+// const bcrypt = require('bcrypt');
 
 // Signup Route
 router.post('/add', async (req, res) => {
