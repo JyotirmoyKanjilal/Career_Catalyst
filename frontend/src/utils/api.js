@@ -115,3 +115,41 @@ export async function postAnswerToDiscussion(id, answer) {
     throw new Error("Failed to post answer to discussion");
   }
 }
+
+// signup user
+export default function Signup() {
+  // ...existing state and logic...
+
+  // Initialize Formik
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      password: "",
+      agreeTerms: false,
+    },
+    validationSchema,
+    onSubmit: async (values) => {
+      setIsLoading(true);
+
+      try {
+        await axios.post(`${API_URL}/user/register`, {
+          name: values.name,
+          email: values.email,
+          password: values.password,
+          confirmPassword: values.password, // Send confirmPassword for backend validation
+        });
+        setIsSubmitted(true);
+      } catch (error) {
+        alert(
+          error?.response?.data?.message ||
+          "Registration failed. Please try again."
+        );
+      }
+
+      setIsLoading(false);
+    },
+  });
+
+  // ...rest of your component...
+}
