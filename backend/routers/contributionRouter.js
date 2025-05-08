@@ -7,7 +7,7 @@ const router = express.Router();
 // Get all contributions
 router.get('/getall', async (req, res) => {
   try {
-    const contributions = await Contribution.find().populate('questionId');
+    const contributions = await Contribution.find().populate('questionId user');
     res.json(contributions);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch contributions' });
@@ -36,7 +36,7 @@ router.post('/add', verifyToken, async (req, res) => {
       questionId,
       question,
       answer,
-      user: req.user._id, // user id from token
+      createdBy: req.user._id, // user id from token
     });
 
     const savedContribution = await newContribution.save();

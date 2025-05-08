@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import {
@@ -23,9 +23,12 @@ import {
   Sparkles,
   ArrowLeft,
   ArrowRight,
+  XIcon,
 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import ReactMarkdown from "react-markdown"
+import { fetchContributions, createDiscussionFromContribution, fetchDiscussionsByContribution } from "../../utils/api"
+import { useRouter } from 'next/navigation'
 
 // Define theme colors based on the provided palette
 const theme = {
@@ -37,6 +40,9 @@ const theme = {
 }
 
 export default function AnswersPage() {
+
+  const router = useRouter();
+
   const [answers, setAnswers] = useState([])
   const [filteredAnswers, setFilteredAnswers] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -49,6 +55,16 @@ export default function AnswersPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [isVisible, setIsVisible] = useState({})
+  const [showDiscussionModal, setShowDiscussionModal] = useState(false)
+  const [selectedContribution, setSelectedContribution] = useState(null)
+  const [discussionForm, setDiscussionForm] = useState({
+    title: '',
+    description: '',
+    tags: ''
+  })
+  const [existingDiscussions, setExistingDiscussions] = useState([])
+  const [isLoadingDiscussions, setIsLoadingDiscussions] = useState(false)
+  const [showNewDiscussionForm, setShowNewDiscussionForm] = useState(true)
   const answersPerPage = 5
 
   const categories = [
@@ -66,195 +82,27 @@ export default function AnswersPage() {
     const fetchData = async () => {
       setIsLoading(true)
       try {
-        // In a real app, this would be a call to your database
-        // const data = await getAnswers()
-
-        // Simulated data for demonstration
-        const data = [
-          {
-            id: 1,
-            question: "How do I answer 'Tell me about yourself' in a job interview?",
-            answer:
-              "When answering 'Tell me about yourself,' structure your response in three parts:\n\n1. **Present**: Start with your current role and responsibilities\n2. **Past**: Briefly mention relevant past experiences\n3. **Future**: Express your interest in the role you're interviewing for\n\nKeep your answer concise (1-2 minutes) and focused on professional experiences relevant to the position. Avoid oversharing personal details.\n\nExample: *'I'm currently a Senior Developer at TechCorp, where I lead a team of five engineers building cloud-based solutions. Before that, I spent three years at StartupX developing their core platform. I'm particularly proud of implementing a CI/CD pipeline that reduced deployment time by 40%. I'm now looking to bring my technical leadership and cloud expertise to a larger organization like yours.'*",
-            category: "Behavioral",
-            upvotes: 245,
-            downvotes: 12,
-            bookmarks: 89,
-            views: 1203,
-            createdAt: new Date(2023, 10, 15),
-            user: {
-              name: "Career Expert",
-              avatar: "/placeholder.svg?height=40&width=40",
-              role: "Career Coach",
-            },
-            tags: ["interview basics", "common questions", "self-introduction"],
+        const data = await fetchContributions()
+        // Map backend data to UI structure
+        const mapped = data.map((c) => ({
+          id: c._id,
+          question: c.questionId?.question || "Question",
+          answer: c.answer,
+          category: c.questionId?.category || "General",
+          upvotes: c.upvotes,
+          downvotes: c.downvotes,
+          bookmarks: 0,
+          views: c.views,
+          createdAt: c.timestamp,
+          user: {
+            name: c.user?.name || "Anonymous",
+            avatar: "/placeholder.svg?height=40&width=40",
+            role: c.user?.role || "User",
           },
-          {
-            id: 2,
-            question: "What are the most common React.js interview questions?",
-            answer:
-              "Here are the most common React.js interview questions you should prepare for:\n\n1. **What is React and how does it work?**\n   React is a JavaScript library for building user interfaces. It works by using a virtual DOM to efficiently update the actual DOM.\n\n2. **What are hooks in React?**\n   Hooks are functions that let you use state and other React features without writing a class component. Common hooks include useState, useEffect, useContext, etc.\n\n3. **Explain the difference between state and props**\n   Props are passed from parent components and are immutable within the component. State is managed within the component and can be updated.\n\n4. **What is JSX?**\n   JSX is a syntax extension for JavaScript that looks similar to HTML and allows you to write HTML-like code in your JavaScript files.\n\n5. **Explain the component lifecycle in React**\n   For class components: mounting, updating, and unmounting phases. For functional components: useEffect hook with dependencies.\n\nPrepare code examples for each of these concepts and be ready to discuss your experience implementing them in real projects.",
-            category: "Technical",
-            upvotes: 189,
-            downvotes: 8,
-            bookmarks: 132,
-            views: 2450,
-            createdAt: new Date(2023, 11, 3),
-            user: {
-              name: "Tech Interviewer",
-              avatar: "/placeholder.svg?height=40&width=40",
-              role: "Senior Developer",
-            },
-            tags: ["react", "frontend", "javascript", "technical interview"],
-          },
-          {
-            id: 3,
-            question: "How should I answer questions about salary expectations?",
-            answer:
-              "When discussing salary expectations, follow these guidelines:\n\n1. **Research thoroughly**: Before the interview, research the typical salary range for the position in your location and industry. Use sites like Glassdoor, PayScale, and industry reports.\n\n2. **Provide a range**: Rather than a specific number, give a range based on your research. For example: 'Based on my experience and the market value for this role, I'm looking for something in the range of $X to $Y.'\n\n3. **Consider the total package**: Remember that compensation includes benefits, bonuses, equity, work-life balance, and growth opportunities.\n\n4. **Deflect if too early**: If asked early in the process, you can politely defer: 'I'd like to learn more about the role and responsibilities before discussing compensation.'\n\n5. **Be confident**: Present your expectations confidently, based on your value and market research.\n\nAvoid underselling yourself or pricing yourself out of consideration. If pressed for a specific number, choose a figure toward the higher end of your researched range.",
-            category: "Behavioral",
-            upvotes: 312,
-            downvotes: 15,
-            bookmarks: 178,
-            views: 3102,
-            createdAt: new Date(2023, 9, 22),
-            user: {
-              name: "Negotiation Pro",
-              avatar: "/placeholder.svg?height=40&width=40",
-              role: "HR Consultant",
-            },
-            tags: ["salary negotiation", "compensation", "interview strategy"],
-          },
-          {
-            id: 4,
-            question: "What are good questions to ask at the end of an interview?",
-            answer:
-              "Asking thoughtful questions at the end of an interview demonstrates your interest and engagement. Here are some effective questions to consider:\n\n**About the Role:**\n- What does success look like in this position in the first 90 days? First year?\n- What are the biggest challenges someone in this position would face?\n- How has this role evolved over time?\n\n**About the Team:**\n- Can you tell me about the team I'd be working with?\n- What's the management style of the person I'd report to?\n- How does the team collaborate and communicate?\n\n**About the Company:**\n- What's the company culture like?\n- What are the company's biggest priorities or challenges in the coming year?\n- How does the company support professional development and growth?\n\n**About Next Steps:**\n- What are the next steps in the interview process?\n- What is your timeline for making a decision?\n\nAvoid questions about basic information readily available on the company website, and questions focused primarily on benefits or time off, which can be discussed after receiving an offer.",
-            category: "Behavioral",
-            upvotes: 276,
-            downvotes: 5,
-            bookmarks: 203,
-            views: 2876,
-            createdAt: new Date(2023, 11, 10),
-            user: {
-              name: "Interview Coach",
-              avatar: "/placeholder.svg?height=40&width=40",
-              role: "Career Strategist",
-            },
-            tags: ["interview questions", "candidate questions", "interview strategy"],
-          },
-          {
-            id: 5,
-            question: "How do I explain a gap in my employment history?",
-            answer:
-              "When explaining employment gaps, honesty and confidence are key. Here's how to address them effectively:\n\n1. **Be honest but strategic**: Never lie about employment gaps, but frame them positively.\n\n2. **Focus on growth and learning**: Highlight what you did during the gap that added to your skills or perspective:\n   - Freelance or consulting work\n   - Volunteer experience\n   - Courses or certifications\n   - Personal projects\n   - Caregiving responsibilities (if comfortable sharing)\n\n3. **Keep it concise**: Briefly explain the gap without oversharing personal details, then redirect the conversation to your qualifications and enthusiasm for the role.\n\n4. **Show how it benefited you**: If possible, explain how the experience during your gap made you a stronger candidate.\n\nExample response: *'After my position at Company X ended, I took six months to complete an advanced certification in project management while doing freelance consulting. This experience broadened my skill set and gave me exposure to different industries, which I believe makes me a more versatile candidate for this role.'*\n\nRemember that employment gaps are increasingly common and many employers are becoming more understanding of diverse career paths.",
-            category: "Behavioral",
-            upvotes: 198,
-            downvotes: 7,
-            bookmarks: 145,
-            views: 1987,
-            createdAt: new Date(2023, 10, 5),
-            user: {
-              name: "HR Specialist",
-              avatar: "/placeholder.svg?height=40&width=40",
-              role: "Recruitment Expert",
-            },
-            tags: ["employment gaps", "career transitions", "interview strategy"],
-          },
-          {
-            id: 6,
-            question: "What are the most important leadership principles for a management position?",
-            answer:
-              "Key leadership principles for management positions include:\n\n1. **Lead by Example**: Demonstrate the work ethic, integrity, and attitude you expect from your team.\n\n2. **Effective Communication**: Clearly articulate vision, expectations, and feedback. Be equally skilled at listening.\n\n3. **Emotional Intelligence**: Understand and manage your emotions and recognize emotions in others to guide thinking and behavior.\n\n4. **Adaptability**: Embrace change and help your team navigate through it successfully.\n\n5. **Empowerment**: Delegate effectively and trust your team members to make decisions and take ownership.\n\n6. **Accountability**: Take responsibility for team outcomes while holding team members accountable for their commitments.\n\n7. **Strategic Thinking**: Balance day-to-day operations with long-term vision and goals.\n\n8. **Continuous Learning**: Commit to personal growth and foster a learning environment for your team.\n\n9. **Inclusivity**: Value diversity of thought and create an environment where all team members feel they belong.\n\n10. **Results Orientation**: Focus on achieving meaningful outcomes while maintaining ethical standards.\n\nWhen interviewing, provide specific examples of how you've demonstrated these principles in past roles. Use the STAR method (Situation, Task, Action, Result) to structure your responses with concrete examples.",
-            category: "Leadership",
-            upvotes: 231,
-            downvotes: 11,
-            bookmarks: 167,
-            views: 2345,
-            createdAt: new Date(2023, 8, 18),
-            user: {
-              name: "Leadership Coach",
-              avatar: "/placeholder.svg?height=40&width=40",
-              role: "Executive Mentor",
-            },
-            tags: ["leadership", "management", "team building"],
-          },
-          {
-            id: 7,
-            question: "How do I solve coding problems in technical interviews?",
-            answer:
-              "To excel at coding problems in technical interviews, follow this structured approach:\n\n1. **Understand the Problem**\n   - Listen carefully and ask clarifying questions\n   - Confirm input/output formats and constraints\n   - Discuss edge cases before coding\n\n2. **Plan Your Approach**\n   - Think aloud to show your reasoning process\n   - Consider multiple solutions before coding\n   - Discuss time and space complexity tradeoffs\n\n3. **Write Clean Code**\n   - Use meaningful variable names\n   - Structure your code logically\n   - Add comments for clarity when necessary\n\n4. **Test Your Solution**\n   - Walk through your code with a simple example\n   - Test edge cases (empty inputs, large values, etc.)\n   - Identify and fix bugs proactively\n\n5. **Optimize If Needed**\n   - Analyze your solution's efficiency\n   - Suggest improvements even if you don't implement them\n\nCommon problem-solving patterns to study:\n- Two-pointer technique\n- Sliding window\n- Binary search\n- Breadth/depth-first search\n- Dynamic programming\n- Hash tables for lookups\n\nPractice regularly on platforms like LeetCode, HackerRank, or CodeSignal, focusing on understanding patterns rather than memorizing solutions.",
-            category: "Problem Solving",
-            upvotes: 287,
-            downvotes: 9,
-            bookmarks: 215,
-            views: 3421,
-            createdAt: new Date(2023, 11, 7),
-            user: {
-              name: "Tech Interviewer",
-              avatar: "/placeholder.svg?height=40&width=40",
-              role: "Senior Developer",
-            },
-            tags: ["coding interview", "algorithms", "problem solving", "technical interview"],
-          },
-          {
-            id: 8,
-            question: "What should I include in my portfolio as a UX designer?",
-            answer:
-              "A strong UX design portfolio should include:\n\n1. **Case Studies (3-5 detailed examples)**\n   - Problem statement and project context\n   - Your research process and key insights\n   - Design process with iterations and decision rationale\n   - Final solution with visuals\n   - Outcomes and impact (metrics if available)\n\n2. **Process Work**\n   - User research documentation\n   - Personas and journey maps\n   - Wireframes and sketches\n   - Prototypes (include interactive versions if possible)\n   - Usability testing results\n\n3. **Range of Skills**\n   - Show variety in projects (mobile, web, different industries)\n   - Highlight specialized skills (information architecture, interaction design, etc.)\n   - Include cross-functional collaboration examples\n\n4. **Personal Touch**\n   - Brief bio that shows your design philosophy\n   - Your unique approach to problem-solving\n   - Contact information and professional social links\n\nTips for presentation:\n- Focus on storytelling over just visuals\n- Be honest about your role in team projects\n- Show before/after comparisons when possible\n- Keep navigation intuitive and accessible\n- Ensure your portfolio itself demonstrates good UX principles\n- Consider including a process section that shows how you work\n\nRegularly update your portfolio with new projects and remove older work that doesn't represent your current skill level.",
-            category: "Career Development",
-            upvotes: 176,
-            downvotes: 4,
-            bookmarks: 132,
-            views: 1876,
-            createdAt: new Date(2023, 10, 25),
-            user: {
-              name: "Design Leader",
-              avatar: "/placeholder.svg?height=40&width=40",
-              role: "UX Director",
-            },
-            tags: ["ux design", "portfolio", "design career"],
-          },
-          {
-            id: 9,
-            question: "How do I prepare for a healthcare administration interview?",
-            answer:
-              "To prepare for a healthcare administration interview, focus on these key areas:\n\n1. **Industry Knowledge**\n   - Stay current on healthcare regulations (HIPAA, ACA, etc.)\n   - Understand reimbursement models and payment systems\n   - Be familiar with quality improvement methodologies\n   - Research current challenges in healthcare delivery\n\n2. **Technical Skills**\n   - Electronic Health Record (EHR) systems experience\n   - Healthcare analytics and reporting capabilities\n   - Budget management and financial analysis\n   - Operational efficiency and process improvement\n\n3. **Leadership and Management**\n   - Staff supervision and development experience\n   - Physician relationship management\n   - Cross-departmental collaboration examples\n   - Change management success stories\n\n4. **Specific Scenarios to Prepare For**\n   - How you've improved patient satisfaction\n   - Cost reduction initiatives you've implemented\n   - Conflict resolution between clinical and administrative staff\n   - Compliance challenge management\n   - Crisis or emergency situation handling\n\n5. **Questions to Ask the Interviewer**\n   - Strategic priorities for the department/organization\n   - Challenges the organization is currently facing\n   - Performance metrics for the role\n   - Organizational culture and leadership style\n\nBefore the interview, thoroughly research the specific healthcare organization - their mission, values, patient population, services offered, and recent news or initiatives. Prepare specific examples from your experience that demonstrate your ability to handle the unique challenges of healthcare administration.",
-            category: "Industry Specific",
-            upvotes: 142,
-            downvotes: 3,
-            bookmarks: 98,
-            views: 1543,
-            createdAt: new Date(2023, 9, 30),
-            user: {
-              name: "Healthcare Admin",
-              avatar: "/placeholder.svg?height=40&width=40",
-              role: "Hospital Director",
-            },
-            tags: ["healthcare", "administration", "industry specific"],
-          },
-          {
-            id: 10,
-            question: "What are the best ways to negotiate a job offer?",
-            answer:
-              "Effective job offer negotiation strategies:\n\n1. **Do Your Research First**\n   - Research salary ranges for similar positions in your location and industry\n   - Understand the complete compensation package (benefits, bonuses, equity, etc.)\n   - Know your market value based on your skills and experience\n\n2. **Consider the Entire Package**\n   - Salary is important, but also consider:\n     - Health benefits and retirement plans\n     - Paid time off and work flexibility\n     - Professional development opportunities\n     - Relocation assistance\n     - Sign-on bonuses\n     - Equity or stock options\n\n3. **Negotiation Tactics**\n   - Express enthusiasm for the role and company\n   - Present your counteroffer as a discussion, not a demand\n   - Use specific numbers rather than ranges when countering\n   - Justify your ask with concrete achievements and value\n   - Consider negotiating multiple elements simultaneously\n   - Get the final offer in writing\n\n4. **Communication Tips**\n   - Negotiate by phone when possible (not email)\n   - Use silence strategically - don't rush to fill pauses\n   - Phrase requests collaboratively: \"How can we work together to reach X?\"\n   - Be professional and respectful throughout\n\n5. **When to Walk Away**\n   - The offer is significantly below market value with no flexibility\n   - Non-negotiable elements don't meet your needs\n   - The negotiation process reveals red flags about company culture\n\nRemember that negotiation is expected - most initial offers have room for adjustment. Practice your negotiation conversation with a friend before the actual discussion to build confidence.",
-            category: "Career Development",
-            upvotes: 298,
-            downvotes: 7,
-            bookmarks: 224,
-            views: 3567,
-            createdAt: new Date(2023, 11, 12),
-            user: {
-              name: "Negotiation Expert",
-              avatar: "/placeholder.svg?height=40&width=40",
-              role: "Career Strategist",
-            },
-            tags: ["negotiation", "job offers", "salary", "career strategy"],
-          },
-        ]
-
-        setAnswers(data)
-        setFilteredAnswers(data)
+          tags: c.questionId?.tags || [],
+        }))
+        setAnswers(mapped)
+        setFilteredAnswers(mapped)
       } catch (error) {
         console.error("Error fetching answers:", error)
       } finally {
@@ -350,15 +198,60 @@ export default function AnswersPage() {
     setExpandedAnswer(expandedAnswer === id ? null : id)
   }
 
+  const openDiscussionModal = async (answer) => {
+    setSelectedContribution(answer.id)
+    setDiscussionForm({
+      title: `Discussion: ${answer.question}`,
+      description: '',
+      tags: answer.tags?.join(', ') || ''
+    })
+    
+    // Fetch existing discussions for this contribution
+    setIsLoadingDiscussions(true)
+    try {
+      const discussions = await fetchDiscussionsByContribution(answer.id)
+      setExistingDiscussions(discussions)
+    } catch (error) {
+      console.error("Failed to fetch discussions:", error)
+    } finally {
+      setIsLoadingDiscussions(false)
+      setShowDiscussionModal(true)
+    }
+  }
+
+  const handleSubmitDiscussion = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const tagsArray = discussionForm.tags
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag.length > 0);
+      
+      const discussionData = {
+        contribution: selectedContribution,
+        title: discussionForm.title,
+        description: discussionForm.description,
+        tags: tagsArray
+      };
+      
+      const newDiscussion = await createDiscussionFromContribution(discussionData);
+      
+      // Add the new discussion to the list or redirect
+      window.location.href = `/discussion/${newDiscussion._id}`;
+    } catch (error) {
+      alert("Failed to create discussion: " + error.message);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#070F12] text-gray-100">
       {/* Header */}
       <header
-        className={`fixed top-0 left-0 right-0 z-50 w-full border-b transition-all duration-500 ${
-          scrolled
-            ? "border-[#008C8B]/30 bg-[#070F12]/90 backdrop-blur supports-[backdrop-filter]:bg-[#070F12]/80 shadow-lg shadow-[#00A3A9]/10"
-            : "border-transparent bg-[#070F12]/70 backdrop-blur-sm"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 w-full border-b transition-all duration-500 ${scrolled
+          ? "border-[#008C8B]/30 bg-[#070F12]/90 backdrop-blur supports-[backdrop-filter]:bg-[#070F12]/80 shadow-lg shadow-[#00A3A9]/10"
+          : "border-transparent bg-[#070F12]/70 backdrop-blur-sm"
+          }`}
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
@@ -608,11 +501,10 @@ export default function AnswersPage() {
                         <button
                           key={category}
                           onClick={() => setSelectedCategory(category)}
-                          className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                            selectedCategory === category
-                              ? "bg-[#00A3A9] text-white"
-                              : "bg-[#003B46]/30 text-gray-300 hover:bg-[#003B46]/50"
-                          }`}
+                          className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${selectedCategory === category
+                            ? "bg-[#00A3A9] text-white"
+                            : "bg-[#003B46]/30 text-gray-300 hover:bg-[#003B46]/50"
+                            }`}
                         >
                           {category}
                         </button>
@@ -712,11 +604,11 @@ export default function AnswersPage() {
 
                     <div className="px-4 sm:px-6 py-4 sm:py-6">
                       <div className={`relative overflow-hidden ${expandedAnswer !== answer.id && "max-h-40"}`}>
-                      <div className="prose prose-invert prose-sm sm:prose-base max-w-none prose-headings:text-[#00A3A9] prose-a:text-[#00A3A9] prose-strong:text-white">
-  <ReactMarkdown>
-    {answer.answer}
-  </ReactMarkdown>
-</div>
+                        <div className="prose prose-invert prose-sm sm:prose-base max-w-none prose-headings:text-[#00A3A9] prose-a:text-[#00A3A9] prose-strong:text-white">
+                          <ReactMarkdown>
+                            {answer.answer}
+                          </ReactMarkdown>
+                        </div>
 
 
                         {expandedAnswer !== answer.id && (
@@ -767,6 +659,13 @@ export default function AnswersPage() {
                           </div>
 
                           <div className="flex items-center space-x-2">
+                            <button
+                              className="inline-flex items-center text-gray-400 hover:text-[#00A3A9] transition-colors ml-2"
+                              onClick={() => openDiscussionModal(answer)}
+                            >
+                              <MessageSquare className="h-4 w-4 mr-1" />
+                              Open Discussion
+                            </button>
                             <button className="p-1.5 rounded-full text-gray-400 hover:text-[#00A3A9] hover:bg-[#003B46]/30 transition-colors">
                               <Bookmark className="h-4 w-4" />
                             </button>
@@ -790,11 +689,10 @@ export default function AnswersPage() {
                 <button
                   onClick={() => paginate(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className={`p-2 rounded-md ${
-                    currentPage === 1
-                      ? "text-gray-500 cursor-not-allowed"
-                      : "text-gray-400 hover:text-white hover:bg-[#003B46]/30"
-                  } transition-colors`}
+                  className={`p-2 rounded-md ${currentPage === 1
+                    ? "text-gray-500 cursor-not-allowed"
+                    : "text-gray-400 hover:text-white hover:bg-[#003B46]/30"
+                    } transition-colors`}
                 >
                   <ArrowLeft className="h-5 w-5" />
                 </button>
@@ -812,11 +710,10 @@ export default function AnswersPage() {
                         <button
                           key={i}
                           onClick={() => paginate(pageNumber)}
-                          className={`px-3 py-1.5 rounded-md text-sm font-medium ${
-                            currentPage === pageNumber
-                              ? "bg-[#00A3A9] text-white"
-                              : "text-gray-400 hover:text-white hover:bg-[#003B46]/30"
-                          } transition-colors`}
+                          className={`px-3 py-1.5 rounded-md text-sm font-medium ${currentPage === pageNumber
+                            ? "bg-[#00A3A9] text-white"
+                            : "text-gray-400 hover:text-white hover:bg-[#003B46]/30"
+                            } transition-colors`}
                         >
                           {pageNumber}
                         </button>
@@ -838,11 +735,10 @@ export default function AnswersPage() {
                 <button
                   onClick={() => paginate(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className={`p-2 rounded-md ${
-                    currentPage === totalPages
-                      ? "text-gray-500 cursor-not-allowed"
-                      : "text-gray-400 hover:text-white hover:bg-[#003B46]/30"
-                  } transition-colors`}
+                  className={`p-2 rounded-md ${currentPage === totalPages
+                    ? "text-gray-500 cursor-not-allowed"
+                    : "text-gray-400 hover:text-white hover:bg-[#003B46]/30"
+                    } transition-colors`}
                 >
                   <ArrowRight className="h-5 w-5" />
                 </button>
@@ -851,6 +747,166 @@ export default function AnswersPage() {
           )}
         </div>
       </main>
+
+      {/* Discussion Modal */}
+      {showDiscussionModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
+          <div className="w-full max-w-lg bg-[#070F12] border border-[#003B46] rounded-lg overflow-hidden shadow-xl transform transition-all max-h-[90vh] flex flex-col">
+            <div className="px-6 py-4 bg-gradient-to-r from-[#003B46]/60 to-[#006770]/60 border-b border-[#003B46] flex-shrink-0">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-medium text-white flex items-center">
+                  <MessageSquare className="h-5 w-5 mr-2 text-[#00A3A9]" />
+                  Discussions
+                </h3>
+                <button 
+                  onClick={() => setShowDiscussionModal(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <XIcon className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+            
+            <div className="flex-grow overflow-auto">
+              {isLoadingDiscussions ? (
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#00A3A9]"></div>
+                  <span className="ml-3 text-gray-300">Loading discussions...</span>
+                </div>
+              ) : existingDiscussions.length > 0 ? (
+                <div className="p-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="text-white font-medium">
+                      {existingDiscussions.length} Discussion{existingDiscussions.length !== 1 ? 's' : ''}
+                    </h4>
+                    <button
+                      onClick={() => setShowNewDiscussionForm(!showNewDiscussionForm)}
+                      className="text-sm text-[#00A3A9] hover:text-white flex items-center"
+                    >
+                      {showNewDiscussionForm ? (
+                        <>
+                          <ChevronUp className="h-4 w-4 mr-1" />
+                          Hide Form
+                        </>
+                      ) : (
+                        <>
+                          <PlusCircle className="h-4 w-4 mr-1" />
+                          New Discussion
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  
+                  {/* List of existing discussions */}
+                  <div className="space-y-4 mb-6">
+                    {existingDiscussions.map((discussion) => (
+                      <div key={discussion._id} className="p-3 bg-[#003B46]/20 border border-[#003B46]/30 rounded-lg">
+                        <Link 
+                          href={`/discussion/${discussion._id}`} 
+                          className="text-white hover:text-[#00A3A9] font-medium block mb-1"
+                        >
+                          {discussion.title}
+                        </Link>
+                        
+                        <div className="flex items-center text-xs text-gray-400 mb-2">
+                          <span>By {discussion.createdBy?.name || "Anonymous"}</span>
+                          <span className="mx-1.5">•</span>
+                          <Clock className="h-3 w-3 mr-1" />
+                          <span>{new Date(discussion.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        
+                        {discussion.description && (
+                          <p className="text-sm text-gray-300 line-clamp-2 mb-2">
+                            {discussion.description}
+                          </p>
+                        )}
+                        
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {discussion.tags?.map((tag, idx) => (
+                            <span key={idx} className="text-xs bg-[#003B46]/40 text-[#00A3A9] px-2 py-0.5 rounded">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+              
+              {/* Form to create a new discussion */}
+              {(existingDiscussions.length === 0 || showNewDiscussionForm) && (
+                <form onSubmit={handleSubmitDiscussion} className="p-6 space-y-4">
+                  {existingDiscussions.length > 0 && (
+                    <div className="pb-3 border-b border-[#003B46]/30 mb-4">
+                      <h4 className="text-white font-medium">Create New Discussion</h4>
+                    </div>
+                  )}
+                  
+                  <div>
+                    <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-1">
+                      Title
+                    </label>
+                    <input
+                      id="title"
+                      type="text"
+                      value={discussionForm.title}
+                      onChange={(e) => setDiscussionForm({...discussionForm, title: e.target.value})}
+                      className="block w-full px-3 py-2 border border-[#003B46] rounded-md bg-[#070F12]/80 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
+                      placeholder="Discussion title"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-1">
+                      Description
+                    </label>
+                    <textarea
+                      id="description"
+                      rows="3"
+                      value={discussionForm.description}
+                      onChange={(e) => setDiscussionForm({...discussionForm, description: e.target.value})}
+                      className="block w-full px-3 py-2 border border-[#003B46] rounded-md bg-[#070F12]/80 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
+                      placeholder="What would you like to discuss about this answer?"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="tags" className="block text-sm font-medium text-gray-300 mb-1">
+                      Tags (comma separated)
+                    </label>
+                    <input
+                      id="tags"
+                      type="text"
+                      value={discussionForm.tags}
+                      onChange={(e) => setDiscussionForm({...discussionForm, tags: e.target.value})}
+                      className="block w-full px-3 py-2 border border-[#003B46] rounded-md bg-[#070F12]/80 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
+                      placeholder="javascript, react, interview"
+                    />
+                  </div>
+                  
+                  <div className="pt-4 flex justify-end space-x-3 border-t border-[#003B46]">
+                    <button
+                      type="button"
+                      onClick={() => existingDiscussions.length > 0 ? setShowNewDiscussionForm(false) : setShowDiscussionModal(false)}
+                      className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-gradient-to-r from-[#006770] to-[#00A3A9] hover:from-[#00A3A9] hover:to-[#006770] text-white rounded-md shadow-sm text-sm font-medium transition-all hover:scale-105"
+                    >
+                      Create Discussion
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="bg-[#070F12] border-t border-[#003B46]/20">
@@ -880,9 +936,8 @@ export default function AnswersPage() {
       {/* Scroll to top button */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className={`fixed bottom-4 right-4 p-2 sm:p-3 rounded-full bg-[#006770] text-white shadow-lg z-40 transition-all duration-300 ${
-          scrolled ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
-        }`}
+        className={`fixed bottom-4 right-4 p-2 sm:p-3 rounded-full bg-[#006770] text-white shadow-lg z-40 transition-all duration-300 ${scrolled ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
+          }`}
         aria-label="Scroll to top"
       >
         <svg

@@ -1,5 +1,6 @@
 const express = require('express');
 const discussions = require('../Models/discussionModel');
+const verifyToken = require('../middlewares/verifyToken');
 
 const router = express.Router();
 
@@ -8,12 +9,16 @@ router.get('/',(req,res) => {
 });
 
 // Create a new discussion
-router.post('/create', async (req, res) => {
+router.post('/create', verifyToken, async (req, res) => {
+    console.log(req.body);
+    
+    req.body.createdBy = req.user._id; // user id from token
     try {
         const discussion = new discussions(req.body);
         await discussion.save();
         res.status(201).json(discussion);
     } catch (err) {
+        console.log(err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -52,6 +57,19 @@ router.post('/:id/answer', async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
+});
+
+// Get discussions by contribution ID
+router.get('/bycontribution/:contributionId', async (req, res) => {
+  try {
+    const discussions = await discussions.find({ 
+      contribution: req.params.contributionId 
+    }).populate('createdBy', 'name email');
+    
+    res.json(discussions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;

@@ -125,3 +125,31 @@ export async function signupUser(userData) {
     throw new Error(error.response?.data?.message || "Registration failed");
   }
 }
+
+// Create a discussion from a contribution
+export async function createDiscussionFromContribution({contribution, title, description, tags}) {
+  console.log(contribution);
+  
+  try {
+    const response = await api.post('/api/discussion/create', {
+      contribution,
+      title,
+      description,
+      tags,
+      // Add other fields as needed (e.g., createdBy, description, tags)
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || "Failed to create discussion");
+  }
+}
+
+// Add this new function to fetch discussions by contribution ID
+export async function fetchDiscussionsByContribution(contributionId) {
+  try {
+    const response = await api.get(`/api/discussion/bycontribution/${contributionId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || "Failed to fetch discussions");
+  }
+}
