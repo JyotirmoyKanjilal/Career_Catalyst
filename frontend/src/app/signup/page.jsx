@@ -5,6 +5,8 @@ import Link from "next/link"
 import { Briefcase, Mail, Lock, User, Eye, EyeOff, ArrowRight, CheckCircle, Github, Twitter } from "lucide-react"
 import * as Yup from "yup"
 import { useFormik } from "formik"
+import axios from "axios"
+import toast from "react-hot-toast"
 
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false)
@@ -32,11 +34,19 @@ export default function Signup() {
     onSubmit: async (values) => {
       setIsLoading(true)
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      axios.post(`${process.env.NEXT_PUBLIC_API_URL}/register`, values)
+        .then((result) => {
+          console.log(result.data);
 
-      setIsLoading(false)
-      setIsSubmitted(true)
+        }).catch((err) => {
+          console.log(err);
+          toast.error("login failed.PLease check your credentials");
+        })
+        .finally(() => {
+
+          setIsLoading(false);
+          setIsSubmitted(true);
+        });
     },
   })
 
@@ -244,11 +254,10 @@ export default function Signup() {
                       <button
                         type="submit"
                         disabled={isLoading || !formik.values.agreeTerms || !formik.isValid}
-                        className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-[#006770] to-[#00A3A9] hover:from-[#00A3A9] hover:to-[#006770] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00A3A9] transition-all ${
-                          isLoading || !formik.values.agreeTerms || !formik.isValid
-                            ? "opacity-70 cursor-not-allowed"
-                            : "hover:scale-105 active:scale-95"
-                        }`}
+                        className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-[#006770] to-[#00A3A9] hover:from-[#00A3A9] hover:to-[#006770] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00A3A9] transition-all ${isLoading || !formik.values.agreeTerms || !formik.isValid
+                          ? "opacity-70 cursor-not-allowed"
+                          : "hover:scale-105 active:scale-95"
+                          }`}
                       >
                         {isLoading ? (
                           <>

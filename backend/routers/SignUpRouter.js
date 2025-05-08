@@ -1,6 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const SignUp = require('../Models/SignUpModel');
+const SignUp = require('../Models/UserModel');
 
 const router = express.Router();
 
@@ -11,14 +11,16 @@ router.post('/register', async (req, res) => {
 
     // Check if user already exists
     const existingUser = await SignUp.findOne({ email });
+    console.log(existingUser);
+    
     if (existingUser) {
       return res.status(400).json({ message: 'Email already registered' });
     }
 
     // Password match check
-    if (password !== confirmPassword) {
-      return res.status(400).json({ message: 'Passwords do not match' });
-    }
+    // if (password !== confirmPassword) {
+    //   return res.status(400).json({ message: 'Passwords do not match' });
+    // }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -29,9 +31,9 @@ router.post('/register', async (req, res) => {
       email,
       password: hashedPassword,
       confirmPassword: hashedPassword,
-      city,
-      avatar,
-      role,
+      // city,
+      // avatar,
+      // role,
     });
 
     await user.save();

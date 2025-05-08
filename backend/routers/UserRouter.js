@@ -2,10 +2,11 @@ const express = require('express');
 const Model = require('../Models/UserModel');
 const jwt = require('jsonwebtoken')
 require('dotenv').config();
+const bcrypt = require('bcryptjs');
 
 const router = express.Router();
 
-router.post('/', async (req, res) => {
+router.post('/authenticate', async (req, res) => {
     try {
         // Find user by email
         const user = await Model.findOne({ email: req.body.email });
@@ -19,16 +20,23 @@ router.post('/', async (req, res) => {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        // Create session or token
-        res.json({
-            message: 'Login successful',
-            data: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role
+        const { _id, name, email } = user;
+        const payload = { _id, name, email }
+
+        jwt.sign(
+            payload,
+            process.env.JWT_SECRET,
+            { expiresIn: '1d' },
+            (err, token) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).json(err);
+
+                } else {
+                    res.status(200).json({ token });
+                }
             }
-        });
+        )
 
     } catch (error) {
         console.error('Login error:', error);

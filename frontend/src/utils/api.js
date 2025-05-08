@@ -29,7 +29,7 @@ export async function fetchQuestions() {
     const response = await api.get('/api/questions/getall');
     return response.data;
   } catch (error) {
-    throw new Error("Failed to fetch questions");
+    throw new Error(error.message || "Failed to fetch questions");
   }
 }
 
@@ -41,7 +41,7 @@ export async function submitContribution(contribution) {
     const response = await api.post('/api/contributions/add', contribution);
     return response.data;
   } catch (error) {
-    throw new Error("Failed to submit contribution");
+    throw new Error(error.message || "Failed to submit contribution");
   }
 }
 
@@ -51,7 +51,7 @@ export async function fetchContributions() {
     const response = await api.get('/api/contributions/getall');
     return response.data;
   } catch (error) {
-    throw new Error("Failed to fetch contributions");
+    throw new Error(error.message || "Failed to fetch contributions");
   }
 }
 
@@ -65,7 +65,7 @@ export async function loginUser(credentials) {
     }
     return response.data;
   } catch (error) {
-    throw new Error("Authentication failed");
+    throw new Error(error.message || "Failed to login user");
   }
 }
 
@@ -82,7 +82,7 @@ export async function fetchDiscussions() {
     const response = await api.get('/api/discussion/getall');
     return response.data;
   } catch (error) {
-    throw new Error("Failed to fetch discussions");
+    throw new Error(error.message || "Failed to fetch discussions");
   }
 }
 
@@ -92,7 +92,7 @@ export async function createDiscussion(discussion) {
     const response = await api.post('/api/discussion/create', discussion);
     return response.data;
   } catch (error) {
-    throw new Error("Failed to create discussion");
+    throw new Error(error.message || "Failed to create discussion");
   }
 }
 
@@ -102,7 +102,7 @@ export async function fetchDiscussionById(id) {
     const response = await api.get(`/api/discussion/${id}`);
     return response.data;
   } catch (error) {
-    throw new Error("Failed to fetch discussion by ID");
+    throw new Error(error.message || "Failed to fetch discussion by ID");
   }
 }
 
@@ -112,44 +112,16 @@ export async function postAnswerToDiscussion(id, answer) {
     const response = await api.post(`/api/discussion/${id}/answer`, answer);
     return response.data;
   } catch (error) {
-    throw new Error("Failed to post answer to discussion");
+    throw new Error(error.message || "Failed to post answer to discussion");
   }
 }
 
-// signup user
-export default function Signup() {
-  // ...existing state and logic...
-
-  // Initialize Formik
-  const formik = useFormik({
-    initialValues: {
-      name: "",
-      email: "",
-      password: "",
-      agreeTerms: false,
-    },
-    validationSchema,
-    onSubmit: async (values) => {
-      setIsLoading(true);
-
-      try {
-        await axios.post(`${API_URL}/user/register`, {
-          name: values.name,
-          email: values.email,
-          password: values.password,
-          confirmPassword: values.password, // Send confirmPassword for backend validation
-        });
-        setIsSubmitted(true);
-      } catch (error) {
-        alert(
-          error?.response?.data?.message ||
-          "Registration failed. Please try again."
-        );
-      }
-
-      setIsLoading(false);
-    },
-  });
-
-  // ...rest of your component...
+// Signup user
+export async function signupUser(userData) {
+  try {
+    const response = await api.post('/api/signup/register', userData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Registration failed");
+  }
 }

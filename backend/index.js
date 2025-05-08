@@ -31,7 +31,7 @@ app.use('/api/feedback', feedbackRouter);
 app.use('/api/discussion', discussionRouter);
 app.use('/api/ai-answer', aiAnswerRouter);
 app.use('/api/contributions', contributionRouter);
-app.use('/signup', signupRouter);
+app.use('/', signupRouter);
 // endpoint or route
 app.get('/',(req,res) => {
     res.send('response from express');
