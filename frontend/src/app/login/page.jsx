@@ -9,9 +9,12 @@ import * as Yup from "yup";
 import { Formik, useFormik } from "formik"
 import React from "react"
 import axios from "axios"
+import {useRouter} from "next/navigation";
+ISSERVER = typeof window === 'undefined';
 
+export default function Login() { 
 
-export default function Login() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false)
   const [formState, setFormState] = useState({
     email: "",
@@ -39,13 +42,14 @@ export default function Login() {
         validationSchema: validationSchema,
         onSubmit: (values) => {
             console.log('Form submitted:', values);
-
             axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/authenticate`, values)
             
             .then((result) => {
               console.log(result.data);
+              // !ISSERVER  localStorage.setItem('user',result.data.token);
               localStorage.setItem('user',result.data.token);
               toast.success("login Successful");
+              router.push('/home');
               
             }).catch((err) => {
               console.log(err);
