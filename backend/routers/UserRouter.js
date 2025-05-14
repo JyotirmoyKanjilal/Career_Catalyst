@@ -22,8 +22,8 @@ router.post('/authenticate', async (req, res) => {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        const { _id, name, email } = user;
-        const payload = { _id, name, email }
+        const { _id, name, email, role } = user;
+        const payload = { _id, name, email, role }
 
         jwt.sign(
             payload,
@@ -35,7 +35,7 @@ router.post('/authenticate', async (req, res) => {
                     res.status(500).json(err);
 
                 } else {
-                    res.status(200).json({ token });
+                    res.status(200).json({ token, role });
                 }
             }
         )
