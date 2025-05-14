@@ -38,7 +38,11 @@ export async function submitContribution(contribution) {
   console.log(contribution);
   
   try {
-    const response = await api.post('/api/contributions/add', contribution);
+    const response = await api.post('/api/contributions/add', contribution, {
+      headers: {
+        'x-auth-token': localStorage.getItem('user'), // Include token in headers
+      },
+    });
     return response.data;
   } catch (error) {
     throw new Error(error.message || "Failed to submit contribution");

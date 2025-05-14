@@ -46,10 +46,14 @@ export default function Login() {
             
             .then((result) => {
               console.log(result.data);
-              // !ISSERVER  localStorage.setItem('user',result.data.token);
               localStorage.setItem('user',result.data.token);
               toast.success("login Successful");
-              router.push('/home');
+              if(result.data.role === 'admin'){
+                router.push('/admin/dashboard');
+              }else{
+                router.push('/user/dashboard');
+              }
+              // !ISSERVER  localStorage.setItem('user',result.data.token);
               
             }).catch((err) => {
               console.log(err);
