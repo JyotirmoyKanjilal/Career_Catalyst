@@ -184,7 +184,7 @@ export default function QuestionManager() {
   // Fetch questions from the backend
   const fetchQuestions = async () => {
     try {
-      const response = await axios.get(`${API_URL}/questions/getall`);
+      const response = await axios.get(`${API_URL}/api/questions/getall`);
       setQuestions(response.data);
     } catch (error) {
       console.error("Error fetching questions:", error);

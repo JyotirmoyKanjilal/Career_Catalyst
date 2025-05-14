@@ -29,6 +29,8 @@ router.get('/:id', async (req, res) => {
 
 // Add a new contribution (user id from token)
 router.post('/add', verifyToken, async (req, res) => {
+  // console.log(req.user);
+  
   try {
     const { questionId, question, answer } = req.body;
 
@@ -36,7 +38,7 @@ router.post('/add', verifyToken, async (req, res) => {
       questionId,
       question,
       answer,
-      createdBy: req.user._id, // user id from token
+      user: req.user._id, // user id from token
     });
 
     const savedContribution = await newContribution.save();

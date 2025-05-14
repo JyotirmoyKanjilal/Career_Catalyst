@@ -51,6 +51,7 @@ export default function Login() {
       
   });
 
+<<<<<<< HEAD
   // Initialize Formik
   const Formik = useFormik({
     initialValues: {
@@ -84,6 +85,38 @@ export default function Login() {
       // e.g., call an API to verify credentials
     },
   });
+=======
+    // Initialize Formik
+    const Formik = useFormik({
+        initialValues: {
+            email: '',
+            password: '',
+        },
+        validationSchema: validationSchema,
+        onSubmit: (values) => {
+            console.log('Form submitted:', values);
+            axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/authenticate`, values)
+            
+            .then((result) => {
+              console.log(result.data);
+              localStorage.setItem('user',result.data.token);
+              toast.success("login Successful");
+              if(result.data.role === 'admin'){
+                router.push('/admin/dashboard');
+              }else{
+                router.push('/');
+              }
+              // !ISSERVER  localStorage.setItem('user',result.data.token);
+              
+            }).catch((err) => {
+              console.log(err);
+              toast.error("login failed.PLease check your credentials"); 
+            });
+            // Here you would typically handle authentication
+            // e.g., call an API to verify credentials
+        },
+    });
+>>>>>>> 97308ede8fdaecea42bd7a456cead07c886c6062
 
   return (
     <div className="min-h-screen bg-[#070F12] text-gray-100 flex flex-col">
