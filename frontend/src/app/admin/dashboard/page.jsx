@@ -21,7 +21,7 @@ import {
   Bell,
   User,
 } from "lucide-react"
-import { getUsers, getContributions, getReports, getStats, updateUserStatus, updateContributionStatus } from "./actions"
+import { getUsers, getContributions, updateContributionStatus } from "./actions"
 
 export default function AdminDashboard() {
   // State for admin dashboard
@@ -167,13 +167,13 @@ export default function AdminDashboard() {
         // For now, we'll use mock data
         const usersData = await getUsers()
         const contributionsData = await getContributions()
-        const reportsData = await getReports()
-        const statsData = await getStats()
-
-        setUsers(usersData)
+        // const reportsData = await getReports()
+        // const statsData = await getStats()
+        // console.log(usersData) 
+        setUsers(usersData) 
         setContributions(contributionsData)
-        setReports(reportsData)
-        setStats(statsData)
+        // setReports(reportsData)
+        // setStats(statsData)
       } catch (error) {
         console.error("Error fetching data:", error)
         setErrorMessage("Failed to load dashboard data")
@@ -420,11 +420,13 @@ export default function AdminDashboard() {
   })
 
   // Filter contributions based on search and filters
+  console.log(contributions);
+  
   const filteredContributions = contributions.filter((contribution) => {
     const matchesSearch =
-      contribution.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      contribution.questionId?.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
       contribution.answer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      contribution.user.toLowerCase().includes(searchTerm.toLowerCase())
+      contribution.user?.name.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesStatus = filters.contributionStatus === "All" || contribution.status === filters.contributionStatus
 
     return matchesSearch && matchesStatus
@@ -806,7 +808,7 @@ export default function AdminDashboard() {
                       <div className="flex justify-between items-start">
                         <div>
                           <p className="text-gray-300 text-sm">Total Users</p>
-                          <h3 className="text-2xl font-bold mt-1">{stats.totalUsers}</h3>
+                          <h3 className="text-2xl font-bold mt-1">{users.length}</h3>
                           <p className="text-xs text-[#00A3A9] mt-2">
                             <span className="font-medium">+12%</span> from last month
                           </p>
@@ -821,7 +823,7 @@ export default function AdminDashboard() {
                       <div className="flex justify-between items-start">
                         <div>
                           <p className="text-gray-300 text-sm">Total Contributions</p>
-                          <h3 className="text-2xl font-bold mt-1">{stats.totalContributions}</h3>
+                          <h3 className="text-2xl font-bold mt-1">{contributions.length}</h3>
                           <p className="text-xs text-[#00A3A9] mt-2">
                             <span className="font-medium">+8%</span> from last month
                           </p>
@@ -836,7 +838,7 @@ export default function AdminDashboard() {
                       <div className="flex justify-between items-start">
                         <div>
                           <p className="text-gray-300 text-sm">Total Questions</p>
-                          <h3 className="text-2xl font-bold mt-1">{stats.totalQuestions}</h3>
+                          <h3 className="text-2xl font-bold mt-1">{answers.length}</h3>
                           <p className="text-xs text-[#00A3A9] mt-2">
                             <span className="font-medium">+15%</span> from last month
                           </p>
