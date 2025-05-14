@@ -305,7 +305,7 @@ export default function Signup() {
               </form>
             )}
 
-            <div className="mt-8">
+            {/* <div className="mt-8">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-[#003B46]"></div>
@@ -340,7 +340,7 @@ export default function Signup() {
                   <Github className="h-5 w-5" />
                 </button>
               </div>
-            </div>
+            </div> */}
 
             <p className="mt-8 text-center text-sm text-gray-400">
               Already have an account?{" "}

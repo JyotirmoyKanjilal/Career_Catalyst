@@ -775,10 +775,12 @@ export default function Home() {
                   : "opacity-0 translate-y-10"
               }`}
             >
+            <Link href="/answers">
               <button className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 border border-transparent text-sm sm:text-base font-medium rounded-md text-white bg-gradient-to-r from-[#006770] to-[#00A3A9] hover:from-[#00A3A9] hover:to-[#006770] transition-all hover:scale-105 active:scale-95 shadow-lg shadow-[#00A3A9]/20">
                 View More Examples
                 <ChevronRight className="ml-1 sm:ml-2 h-4 w-4 sm:h-5 sm:w-5" />
               </button>
+              </Link>
             </div>
           </div>
         </div>
