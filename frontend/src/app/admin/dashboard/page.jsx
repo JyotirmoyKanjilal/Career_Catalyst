@@ -21,7 +21,8 @@ import {
   Bell,
   User,
 } from "lucide-react"
-import { getUsers, getContributions, updateContributionStatus } from "./actions"
+import { getUsers, getContributions, getFeedback, getDiscussions } from "./actions"
+// import {set} from "mongoose"
 
 export default function AdminDashboard() {
   // State for admin dashboard
@@ -29,13 +30,15 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState([])
   const [contributions, setContributions] = useState([])
   const [reports, setReports] = useState([])
+  const [feedback, setFeedback] = useState([])
+  const [discussions, setDiscussions] = useState([])
   const [stats, setStats] = useState({
-    totalUsers: 0,
-    activeUsers: 0,
-    totalContributions: 0,
-    pendingContributions: 0,
-    totalQuestions: 0,
-    totalReports: 0,
+  //   totalUsers: 0,
+  //   activeUsers: 0,
+  //   totalContributions: 0,
+  //   pendingContributions: 0,
+  //   totalQuestions: 0,
+  //   totalReports: 0,
     userGrowth: [],
     contributionsByCategory: [],
   })
@@ -167,11 +170,15 @@ export default function AdminDashboard() {
         // For now, we'll use mock data
         const usersData = await getUsers()
         const contributionsData = await getContributions()
+        const feedbackData = await getFeedback()
+        const discussionsData = await getDiscussions()
         // const reportsData = await getReports()
         // const statsData = await getStats()
         // console.log(usersData) 
         setUsers(usersData) 
         setContributions(contributionsData)
+        setFeedback(feedbackData)
+        setDiscussions(discussionsData)
         // setReports(reportsData)
         // setStats(statsData)
       } catch (error) {
@@ -838,7 +845,7 @@ export default function AdminDashboard() {
                       <div className="flex justify-between items-start">
                         <div>
                           <p className="text-gray-300 text-sm">Total Questions</p>
-                          <h3 className="text-2xl font-bold mt-1">{stats.totalQuestions}</h3>
+                          <h3 className="text-2xl font-bold mt-1">{answers.length}</h3>
                           <p className="text-xs text-[#00A3A9] mt-2">
                             <span className="font-medium">+15%</span> from last month
                           </p>
@@ -852,8 +859,8 @@ export default function AdminDashboard() {
                     <div className="bg-gradient-to-br from-[#003B46] to-[#006770] rounded-lg p-4 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
                       <div className="flex justify-between items-start">
                         <div>
-                          <p className="text-gray-300 text-sm">Pending Reports</p>
-                          <h3 className="text-2xl font-bold mt-1">{stats.totalReports}</h3>
+                          <p className="text-gray-300 text-sm">Total Discussions</p>
+                          <h3 className="text-2xl font-bold mt-1">{discussions.length}</h3>
                           <p className="text-xs text-[#00A3A9] mt-2">
                             <span className="font-medium">-5%</span> from last month
                           </p>

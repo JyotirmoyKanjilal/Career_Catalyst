@@ -15,26 +15,27 @@ export async function getContributions() {
   return res.data;
 }
 
-// Get all reports (implement this endpoint in your backend if not present)
-export async function getQuestions() {
-  const res = await axios.get(`${API_URL}/api/questions/getall`);
-  return res.data;
-}
+// Get all Questions
+// export async function getQuestions() {
+//   const res = await axios.get(`${API_URL}/api/questions/getall`);
+//   return res.data;
+// }
 
-// Get dashboard stats (implement this endpoint in your backend if not present)
+// Get Feedback
 export async function getFeedback() {
   const res = await axios.get(`${API_URL}/api/feedback/getall`);
   return res.data;
 }
 
-// Update user status
+// Update AI answers
 export async function getAIanswers() {
   const res = await axios.put(`${API_URL}/api/ai-answer/getall`);
   return res.data;
 }
 
 // Update contribution status
-export async function updateContributionStatus(contributionId, status) {
-  const res = await axios.patch(`${API_URL}/api/contributions/${contributionId}/status`, { status });
+export async function getDiscussions() {
+  const res = await axios.put(`${API_URL}/api/discussions/getall`);
   return res.data;
 }
+
