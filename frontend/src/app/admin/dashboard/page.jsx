@@ -838,7 +838,7 @@ export default function AdminDashboard() {
                       <div className="flex justify-between items-start">
                         <div>
                           <p className="text-gray-300 text-sm">Total Questions</p>
-                          <h3 className="text-2xl font-bold mt-1">{answers.length}</h3>
+                          <h3 className="text-2xl font-bold mt-1">{stats.totalQuestions}</h3>
                           <p className="text-xs text-[#00A3A9] mt-2">
                             <span className="font-medium">+15%</span> from last month
                           </p>
