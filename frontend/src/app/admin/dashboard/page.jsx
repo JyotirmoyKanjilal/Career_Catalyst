@@ -21,7 +21,7 @@ import {
   Bell,
   User,
 } from "lucide-react"
-import { getUsers, getContributions, getFeedback, getDiscussions } from "./actions"
+import { getUsers, getContributions, getFeedback, getDiscussions, getUserGrowth, getReports } from "./actions"
 import { fetchQuestions } from "@/src/utils/api"
 // import {set} from "mongoose"
 
@@ -40,7 +40,9 @@ export default function AdminDashboard() {
   //   pendingContributions: 0,
   //   totalQuestions: 0,
   //   totalReports: 0,
-    userGrowth: [],
+    userGrowth: [
+      5, 8, 12, 7, 15, 10, 18
+    ],
     contributionsByCategory: [],
   })
   const [scrolled, setScrolled] = useState(false)
@@ -74,6 +76,12 @@ export default function AdminDashboard() {
     start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0], // 30 days ago
     end: new Date().toISOString().split("T")[0], // today
   })
+
+  // New state variables
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [aiEnabled, setAiEnabled] = useState(true);
+  const [twoFactorAuth, setTwoFactorAuth] = useState(true);
+  const [contentModeration, setContentModeration] = useState(true);
 
   const filterRef = useRef(null)
   const userActionsRef = useRef([])
@@ -167,21 +175,27 @@ export default function AdminDashboard() {
     const fetchData = async () => {
       setIsLoading(true)
       try {
-        // In a real app, these would be actual API calls
-        // For now, we'll use mock data
-        const usersData = await getUsers()
-        const contributionsData = await getContributions()
-        const feedbackData = await getFeedback()
-        // const discussionsData = await getDiscussions()
-        // const reportsData = await getReports()
-        // const statsData = await getStats()
-        // console.log(usersData) 
-        setUsers(usersData) 
+        const [usersData, contributionsData, feedbackData, discussionsData, userGrowthData, reportsData] = 
+          await Promise.all([
+            getUsers(),
+            getContributions(),
+            getFeedback(),
+            getDiscussions(),
+            getUserGrowth(),
+            getReports()
+          ]);
+        
+        setUsers(usersData)
         setContributions(contributionsData)
         setFeedback(feedbackData)
         setDiscussions(discussionsData)
-        // setReports(reportsData)
-        // setStats(statsData)
+        setReports(reportsData)
+        
+        // Update stats with real user growth data
+        setStats(prevStats => ({
+          ...prevStats,
+          userGrowth: userGrowthData
+        }));
       } catch (error) {
         console.error("Error fetching data:", error)
         setErrorMessage("Failed to load dashboard data")
@@ -196,30 +210,44 @@ export default function AdminDashboard() {
   // Draw charts when data is loaded and tab is active
   useEffect(() => {
     if (activeTab === "overview" && !isLoading && stats.userGrowth?.length > 0) {
-      drawUserGrowthChart()
-      drawCategoryPieChart()
+      // Add an animation delay
+      setTimeout(() => {
+        drawUserGrowthChart();
+        drawCategoryPieChart();
+      }, 300);
     }
   }, [activeTab, isLoading, stats])
 
   // Draw user growth chart
   const drawUserGrowthChart = () => {
-    if (!chartRef.current) return
-
-    const canvas = chartRef.current
-    const ctx = canvas.getContext("2d")
-    const width = canvas.width
-    const height = canvas.height
-
+    if (!chartRef.current) return;
+    
+    const canvas = chartRef.current;
+    const ctx = canvas.getContext("2d");
+    const width = canvas.width;
+    const height = canvas.height;
+    
     // Clear canvas
-    ctx.clearRect(0, 0, width, height)
-
-    // Sample data - user growth over last 7 days
-    const data = stats.userGrowth || [5, 8, 12, 7, 15, 10, 18]
-    const maxValue = Math.max(...data)
-    const padding = 20
-    const barWidth = (width - padding * 2) / data.length - 10
-    const barMaxHeight = height - padding * 2
-
+    ctx.clearRect(0, 0, width, height);
+    
+    // Use real data from stats
+    const data = stats.userGrowth || [0, 0, 0, 0, 0, 0, 0];
+    
+    // Calculate max value dynamically, or use at least 5 as minimum
+    const maxValue = Math.max(5, ...data);
+    
+    const padding = 20;
+    const barWidth = (width - padding * 2) / data.length - 10;
+    const barMaxHeight = height - padding * 2;
+    
+    // Generate day labels for the last 7 days
+    const dayLabels = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      dayLabels.push(d.toLocaleDateString('en-US', { weekday: 'short' }));
+    }
+    
     // Draw grid lines
     ctx.strokeStyle = "rgba(255, 255, 255, 0.1)"
     ctx.lineWidth = 1
@@ -256,9 +284,8 @@ export default function AdminDashboard() {
       ctx.textAlign = "center"
       ctx.fillText(value.toString(), x + barWidth / 2, y - 5)
 
-      // Draw day label
-      const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-      ctx.fillText(days[index], x + barWidth / 2, height - 5)
+      // Draw day label with actual date
+      ctx.fillText(dayLabels[index], x + barWidth / 2, height - 5);
     })
   }
 
@@ -417,6 +444,30 @@ export default function AdminDashboard() {
     }
   }, [])
 
+  // Add this near your other useEffect hooks
+  useEffect(() => {
+    // Add mousemove listener to pie chart
+    const canvas = pieChartRef.current;
+    if (!canvas || !stats.contributionsByCategory) return;
+    
+    const handleMouseMove = (event) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      
+      // Check if hover is on a slice and show tooltip
+      // Implementation would require calculating angles and distances
+      // This is just a placeholder for the concept
+      canvas.style.cursor = 'pointer';
+    };
+    
+    canvas.addEventListener('mousemove', handleMouseMove);
+    
+    return () => {
+      canvas.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, [pieChartRef.current, stats.contributionsByCategory]);
+
   // Filter users based on search and filters
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
@@ -431,13 +482,26 @@ export default function AdminDashboard() {
   console.log(contributions);
   
   const filteredContributions = contributions.filter((contribution) => {
+    // Safely access nested properties
+    const question = contribution.questionId?.question || 
+                    contribution.question || 
+                    '';
+    
+    const answer = contribution.answer || '';
+    
+    const userName = contribution.user?.name || 
+                    contribution.userName || 
+                    '';
+    
     const matchesSearch =
-      contribution.questionId?.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      contribution.answer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      contribution.user?.name.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = filters.contributionStatus === "All" || contribution.status === filters.contributionStatus
+      question.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      answer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      userName.toLowerCase().includes(searchTerm.toLowerCase());
+      
+    const matchesStatus = filters.contributionStatus === "All" || 
+                          contribution.status === filters.contributionStatus;
 
-    return matchesSearch && matchesStatus
+    return matchesSearch && matchesStatus;
   })
 
   // Filter reports based on search and filters
@@ -562,6 +626,21 @@ export default function AdminDashboard() {
       })),
     )
   }
+
+  // Calculate growth percentage
+  const calculateGrowthPercentage = (growthData) => {
+    if (!growthData || growthData.length < 7) return 0;
+    
+    // Calculate total new users in first half of the week
+    const firstHalf = growthData.slice(0, 3).reduce((sum, val) => sum + val, 0);
+    // Calculate total new users in second half of the week
+    const secondHalf = growthData.slice(3).reduce((sum, val) => sum + val, 0);
+    
+    if (firstHalf === 0) return secondHalf > 0 ? 100 : 0;
+    
+    const percentChange = ((secondHalf - firstHalf) / firstHalf) * 100;
+    return Math.round(percentChange);
+  };
 
   return (
     <div className="min-h-screen bg-[#070F12] text-white relative overflow-hidden">
@@ -743,7 +822,8 @@ export default function AdminDashboard() {
                             <p className="text-xs text-gray-400 mt-1">{notification.time}</p>
                           </div>
                         ))
-                      )}
+                      )
+                      }
                     </div>
                   </div>
                 )}
@@ -818,7 +898,14 @@ export default function AdminDashboard() {
                           <p className="text-gray-300 text-sm">Total Users</p>
                           <h3 className="text-2xl font-bold mt-1">{users.length}</h3>
                           <p className="text-xs text-[#00A3A9] mt-2">
-                            <span className="font-medium">+12%</span> from last month
+                            {stats.userGrowth && (
+                              <>
+                                <span className="font-medium">
+                                  {calculateGrowthPercentage(stats.userGrowth)}%
+                                </span> 
+                                {' '}from last week
+                              </>
+                            )}
                           </p>
                         </div>
                         <div className="p-2 bg-[#00A3A9]/20 rounded-lg">
@@ -1033,7 +1120,9 @@ export default function AdminDashboard() {
                                         className="w-full text-left px-4 py-2 text-sm hover:bg-[#006770]/20 transition-colors"
                                         onClick={() => {
                                           // View user profile action
-                                          setShowUserActions(null)
+                                          setSelectedUserId(user.id);
+                                          setShowUserActions(null);
+                                          handleViewUserProfile(user.id);
                                         }}
                                       >
                                         View Profile
@@ -1564,8 +1653,17 @@ export default function AdminDashboard() {
                           <p className="text-sm text-gray-400">Temporarily disable the site for maintenance</p>
                         </div>
                         <div className="relative inline-block w-12 h-6 rounded-full bg-[#070F12]">
-                          <input type="checkbox" id="maintenance-toggle" className="sr-only" />
-                          <span className="block w-6 h-6 rounded-full bg-gray-500 absolute left-0 transition-transform duration-200"></span>
+                          <input 
+                            type="checkbox" 
+                            id="maintenance-toggle" 
+                            className="sr-only" 
+                            checked={maintenanceMode}
+                            onChange={() => setMaintenanceMode(!maintenanceMode)}
+                          />
+                          <span 
+                            className={`block w-6 h-6 rounded-full absolute transition-transform duration-200
+                              ${maintenanceMode ? 'bg-[#00A3A9] left-6' : 'bg-gray-500 left-0'}`}>
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -1600,33 +1698,14 @@ export default function AdminDashboard() {
                           <p className="text-sm text-gray-400">Toggle all AI-powered features</p>
                         </div>
                         <div className="relative inline-block w-12 h-6 rounded-full bg-[#070F12]">
-                          <input type="checkbox" id="ai-toggle" className="sr-only" defaultChecked />
-                          <span className="block w-6 h-6 rounded-full bg-[#00A3A9] absolute left-6 transition-transform duration-200"></span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-[#003B46]/50 rounded-lg p-4 shadow-lg">
-                    <h3 className="text-lg font-medium mb-4">Security Settings</h3>
-
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h4 className="font-medium">Two-Factor Authentication</h4>
-                          <p className="text-sm text-gray-400">Require 2FA for admin accounts</p>
-                        </div>
-                        <div className="relative inline-block w-12 h-6 rounded-full bg-[#070F12]">
-                          <input type="checkbox" id="2fa-toggle" className="sr-only" defaultChecked />
+                          <input type="checkbox" id="ai-features-toggle" className="sr-only" defaultChecked />
                           <span className="block w-6 h-6 rounded-full bg-[#00A3A9] absolute left-6 transition-transform duration-200"></span>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h4 className="font-medium">Content Moderation</h4>
-                          <p className="text-sm text-gray-400">Auto-moderate user submissions</p>
-                        </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Content Moderation</label>
+                        <p className="text-sm text-gray-400 mb-2">Auto-moderate user submissions</p>
                         <div className="relative inline-block w-12 h-6 rounded-full bg-[#070F12]">
                           <input type="checkbox" id="moderation-toggle" className="sr-only" defaultChecked />
                           <span className="block w-6 h-6 rounded-full bg-[#00A3A9] absolute left-6 transition-transform duration-200"></span>
@@ -1645,7 +1724,7 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="flex justify-end">
-                    <button className="px-4 py-2 bg-[#00A3A9] hover:bg-[#008C8B] transition-colors rounded-md">
+                    <button className="px-4 py-2 bg-[#00A3A9] rounded-md shadow-md hover:bg-[#008C8B] transition-colors">
                       Save Settings
                     </button>
                   </div>

@@ -142,4 +142,39 @@ router.post('/authenticate', (req, res) => {
         });
 })
 
+router.get('/growth', async (req, res) => {
+    try {
+        // Get user growth for the last 7 days
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - 6); // Last 7 days including today
+        
+        // Array to hold the results
+        const userGrowth = [];
+        
+        // For each day, count users created on that day
+        for (let i = 0; i < 7; i++) {
+          const currentDate = new Date(startDate);
+          currentDate.setDate(startDate.getDate() + i);
+          
+          const nextDate = new Date(currentDate);
+          nextDate.setDate(currentDate.getDate() + 1);
+          
+          const count = await Model.countDocuments({
+            createdAt: {
+              $gte: currentDate,
+              $lt: nextDate
+            }
+          });
+          
+          userGrowth.push(count);
+        }
+        
+        res.json({ userGrowth });
+      } catch (error) {
+        console.error('Error fetching user growth:', error);
+        res.status(500).json({ error: 'Failed to fetch user growth data' });
+      }
+});
+
 module.exports = router;
