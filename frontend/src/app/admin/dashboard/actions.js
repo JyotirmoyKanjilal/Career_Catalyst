@@ -35,7 +35,7 @@ export async function getAIanswers() {
 
 // Update contribution status
 export async function getDiscussions() {
-  const res = await axios.put(`${API_URL}/api/discussions/getall`);
+  const res = await axios.put(`${API_URL}/api/discussion/getall`);
   return res.data;
 }
 

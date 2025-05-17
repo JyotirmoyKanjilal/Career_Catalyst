@@ -22,6 +22,7 @@ import {
   User,
 } from "lucide-react"
 import { getUsers, getContributions, getFeedback, getDiscussions } from "./actions"
+import { fetchQuestions } from "@/src/utils/api"
 // import {set} from "mongoose"
 
 export default function AdminDashboard() {
@@ -171,7 +172,7 @@ export default function AdminDashboard() {
         const usersData = await getUsers()
         const contributionsData = await getContributions()
         const feedbackData = await getFeedback()
-        const discussionsData = await getDiscussions()
+        // const discussionsData = await getDiscussions()
         // const reportsData = await getReports()
         // const statsData = await getStats()
         // console.log(usersData) 
@@ -845,7 +846,7 @@ export default function AdminDashboard() {
                       <div className="flex justify-between items-start">
                         <div>
                           <p className="text-gray-300 text-sm">Total Questions</p>
-                          <h3 className="text-2xl font-bold mt-1">{answers.length}</h3>
+                          <h3 className="text-2xl font-bold mt-1">{feedback.length}</h3>
                           <p className="text-xs text-[#00A3A9] mt-2">
                             <span className="font-medium">+15%</span> from last month
                           </p>

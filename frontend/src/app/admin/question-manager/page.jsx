@@ -144,6 +144,8 @@ export default function QuestionManager() {
   const [successMessage, setSuccessMessage] = useState(""); // Add this line
   const [errorMessage, setErrorMessage] = useState(""); // Assuming errorMessage is already defined
   const [isSubmitting, setIsSubmitting] = useState(false); // Assuming this is already defined
+  const [newAnswer, setNewAnswer] = useState("");
+  const [newAnswers, setNewAnswers] = useState([]);
 
   // UI state
   const [searchTerm, setSearchTerm] = useState("")
@@ -208,12 +210,12 @@ export default function QuestionManager() {
     try {
       if (isEditingQuestion) {
         // Update existing question
-        const response = await axios.put(`${API_URL}/questions/update/${isEditingQuestion}`, newQuestion);
+        const response = await axios.put(`${API_URL}/questions/update/${isEditingQuestion}`, { ...newQuestion, answers: newAnswers });
         setQuestions(questions.map((q) => (q._id === isEditingQuestion ? response.data : q)));
         setSuccessMessage("Question updated successfully!");
       } else {
         // Add new question
-        const response = await axios.post(`${API_URL}/questions/add`, newQuestion);
+        const response = await axios.post(`${API_URL}/questions/add`, { ...newQuestion, answers: newAnswers });
         setQuestions([...questions, response.data]);
         setSuccessMessage("Question added successfully!");
       }
@@ -230,11 +232,28 @@ export default function QuestionManager() {
         difficulty: "Medium",
         tags: [],
       });
+      setNewAnswers([]);
 
       // Clear success message after 3 seconds
       setTimeout(() => {
         setSuccessMessage("");
       }, 3000);
+    }
+  };
+
+  // Add this function inside your component
+  const editQuestion = (id) => {
+    const questionToEdit = questions.find(q => q._id === id || q.id === id);
+    if (questionToEdit) {
+      setIsAddingQuestion(true);
+      setIsEditingQuestion(questionToEdit._id || questionToEdit.id);
+      setNewQuestion({
+        question: questionToEdit.question,
+        category: questionToEdit.category,
+        difficulty: questionToEdit.difficulty,
+        tags: questionToEdit.tags,
+      });
+      setNewAnswers(questionToEdit.answersList || []); // Use answersList or answers array if present
     }
   };
 
@@ -916,6 +935,50 @@ export default function QuestionManager() {
                         </button>
                       </div>
                       <p className="mt-1 text-xs text-gray-400">Popular tags: {availableTags.slice(0, 5).join(", ")}</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Answers</label>
+                      <div className="flex gap-2 mb-2">
+                        <input
+                          type="text"
+                          value={newAnswer}
+                          onChange={(e) => setNewAnswer(e.target.value)}
+                          className="flex-1 bg-[#070F12] border border-[#003B46]/50 rounded-md p-2 text-gray-100 focus:border-[#00A3A9] outline-none"
+                          placeholder="Add an answer..."
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (newAnswer.trim()) {
+                              setNewAnswers([...newAnswers, newAnswer.trim()]);
+                              setNewAnswer("");
+                            }
+                          }}
+                          disabled={!newAnswer.trim()}
+                          className={`px-3 py-2 rounded ${
+                            newAnswer.trim()
+                              ? "bg-[#006770] hover:bg-[#00A3A9] text-white"
+                              : "bg-[#003B46]/30 text-gray-500 cursor-not-allowed"
+                          } transition-colors`}
+                        >
+                          Add
+                        </button>
+                      </div>
+                      <ul className="space-y-1">
+                        {newAnswers.map((ans, idx) => (
+                          <li key={idx} className="flex items-center justify-between bg-[#003B46]/30 px-3 py-1 rounded text-sm text-gray-100">
+                            {ans}
+                            <button
+                              type="button"
+                              onClick={() => setNewAnswers(newAnswers.filter((_, i) => i !== idx))}
+                              className="ml-2 text-gray-400 hover:text-red-400"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
 
                     <div className="flex justify-end space-x-3 pt-4">

@@ -10,6 +10,13 @@ router.post('/add', (req, res) => {
         .then((result) => res.status(200).json(result))
         .catch((err) => res.status(500).json(err));
 });
+// Get all feedback
+router.get('/getall', (req, res) => {
+    FeedbackModel.find()
+        .populate('expertId', 'name role company')
+        .then((result) => res.status(200).json(result))
+        .catch((err) => res.status(500).json(err));
+});
 
 // Get all feedback for a specific query
 router.get('/getbyquery/:queryId', (req, res) => {
