@@ -173,7 +173,7 @@ export default function QuestionManager() {
     difficulty: "Medium",
     tags: [],
   });
-  const [availableTags, setAvailableTags] = useState(["React", "JavaScript", "CSS", "HTML", "Node.js"]);
+  const [availableTags, setAvailableTags] = useState(["TCS", "Wipro", "Accenture", "LTI"]);
   const [newTag, setNewTag] = useState("");
 
   const filterRef = useRef(null);
@@ -210,8 +210,13 @@ export default function QuestionManager() {
     try {
       if (isEditingQuestion) {
         // Update existing question
-        const response = await axios.put(`${API_URL}/questions/update/${isEditingQuestion}`, { ...newQuestion, answers: newAnswers });
-        setQuestions(questions.map((q) => (q._id === isEditingQuestion ? response.data : q)));
+        const response = await axios.put(
+          `${API_URL}/questions/update/${isEditingQuestion}`,
+          { ...newQuestion, answers: newAnswers }
+        );
+        setQuestions(questions.map((q) =>
+          (q._id === isEditingQuestion || q.id === isEditingQuestion) ? response.data : q
+        ));
         setSuccessMessage("Question updated successfully!");
       } else {
         // Add new question
@@ -246,7 +251,7 @@ export default function QuestionManager() {
     const questionToEdit = questions.find(q => q._id === id || q.id === id);
     if (questionToEdit) {
       setIsAddingQuestion(true);
-      setIsEditingQuestion(questionToEdit._id || questionToEdit.id);
+      setIsEditingQuestion(questionToEdit._id || questionToEdit.id); // Always use _id if available
       setNewQuestion({
         question: questionToEdit.question,
         category: questionToEdit.category,
@@ -254,6 +259,22 @@ export default function QuestionManager() {
         tags: questionToEdit.tags,
       });
       setNewAnswers(questionToEdit.answersList || []); // Use answersList or answers array if present
+    }
+  };
+
+  const deleteQuestion = async (id) => {
+    setIsSubmitting(true);
+    setErrorMessage("");
+    try {
+      await axios.delete(`${API_URL}/questions/delete/${id}`);
+      setQuestions(questions.filter((q) => (q._id || q.id) !== id));
+      setSuccessMessage("Question deleted successfully!");
+      setShowDeleteConfirm(null);
+    } catch (error) {
+      setErrorMessage("Failed to delete question. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+      setTimeout(() => setSuccessMessage(""), 3000);
     }
   };
 
@@ -655,13 +676,13 @@ export default function QuestionManager() {
                         {question.saved ? <BookmarkCheck className="h-5 w-5" /> : <Bookmark className="h-5 w-5" />}
                       </button>
                       <button
-                        onClick={() => editQuestion(question.id)}
+                        onClick={() => editQuestion(question._id || question.id)}
                         className="p-1 rounded-full text-gray-400 hover:text-white transition-colors"
                       >
                         <Edit className="h-5 w-5" />
                       </button>
                       <button
-                        onClick={() => setShowDeleteConfirm(question.id)}
+                        onClick={() => setShowDeleteConfirm(question._id || question.id)}
                         className="p-1 rounded-full text-gray-400 hover:text-red-400 transition-colors"
                       >
                         <Trash className="h-5 w-5" />
@@ -716,7 +737,7 @@ export default function QuestionManager() {
 
                   {/* Delete Confirmation */}
                   <AnimatePresence>
-                    {showDeleteConfirm === question.id && (
+                    {showDeleteConfirm === (question._id || question.id) && (
                       <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -732,7 +753,7 @@ export default function QuestionManager() {
                             Cancel
                           </button>
                           <button
-                            onClick={() => deleteQuestion(question.id)}
+                            onClick={() => deleteQuestion(question._id || question.id)}
                             disabled={isSubmitting}
                             className="px-3 py-1 text-xs bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded transition-colors flex items-center"
                           >
