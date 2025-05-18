@@ -11,6 +11,7 @@ const discussionRouter = require('./routers/discussionRouter');
 const aiAnswerRouter = require('./routers/ai-answerRouter');
 const contributionRouter = require('./routers/contributionRouter');
 const signupRouter = require('./routers/SignUpRouter');
+const contactRouter = require('./routers/contactRouter');
 const cors =require('cors');
 
 
@@ -32,6 +33,7 @@ app.use('/api/discussion', discussionRouter);
 app.use('/api/ai-answer', aiAnswerRouter);
 app.use('/api/contributions', contributionRouter);
 app.use('/', signupRouter);
+app.use('/api/contact', contactRouter);
 // endpoint or route
 app.get('/',(req,res) => {
     res.send('response from express');

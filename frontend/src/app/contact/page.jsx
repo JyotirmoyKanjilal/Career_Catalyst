@@ -4,37 +4,34 @@ import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Briefcase, Mail, Phone, MapPin, Send, ArrowRight, CheckCircle } from "lucide-react"
+import { Formik, Form, Field, ErrorMessage } from "formik"
+import * as Yup from "yup"
 
 export default function Contact() {
-  const [formState, setFormState] = useState({
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
+
+  const initialValues = {
     name: "",
     email: "",
     subject: "",
     message: "",
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSubmitted, setIsSubmitted] = useState(false)
-
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormState((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Name is required"),
+    email: Yup.string().email("Invalid email address").required("Email is required"),
+    subject: Yup.string().required("Subject is required"),
+    message: Yup.string().required("Message is required"),
+  })
 
+  const handleSubmit = async (values, { resetForm }) => {
+    setIsSubmitting(true)
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500))
-
     setIsSubmitting(false)
     setIsSubmitted(true)
-    setFormState({
-      name: "",
-      email: "",
-      subject: "",
-      message: "",
-    })
+    resetForm()
   }
 
   return (
@@ -106,110 +103,125 @@ export default function Contact() {
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
-                    Your Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formState.name}
-                    onChange={handleChange}
-                    required
-                    className="block w-full rounded-md border-2 border-[#003B46]/50 bg-[#070F12]/80 py-3 px-4 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
-                    placeholder="John Doe"
-                  />
-                </div>
+              <Formik
+                initialValues={initialValues}
+                validationSchema={validationSchema}
+                onSubmit={handleSubmit}
+              >
+                {({ errors, touched }) => (
+                  <Form className="space-y-6">
+                    <div>
+                      <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
+                        Your Name
+                      </label>
+                      <Field
+                        type="text"
+                        id="name"
+                        name="name"
+                        required
+                        className={`block w-full rounded-md border-2 border-[#003B46]/50 bg-[#070F12]/80 py-3 px-4 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all ${
+                          errors.name && touched.name ? "border-red-500" : ""
+                        }`}
+                        placeholder="John Doe"
+                      />
+                      <ErrorMessage name="name" component="div" className="text-red-400 text-xs mt-1" />
+                    </div>
 
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formState.email}
-                    onChange={handleChange}
-                    required
-                    className="block w-full rounded-md border-2 border-[#003B46]/50 bg-[#070F12]/80 py-3 px-4 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
-                    placeholder="john@example.com"
-                  />
-                </div>
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+                        Email Address
+                      </label>
+                      <Field
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                        className={`block w-full rounded-md border-2 border-[#003B46]/50 bg-[#070F12]/80 py-3 px-4 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all ${
+                          errors.email && touched.email ? "border-red-500" : ""
+                        }`}
+                        placeholder="john@example.com"
+                      />
+                      <ErrorMessage name="email" component="div" className="text-red-400 text-xs mt-1" />
+                    </div>
 
-                <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-gray-300 mb-1">
-                    Subject
-                  </label>
-                  <input
-                    type="text"
-                    id="subject"
-                    name="subject"
-                    value={formState.subject}
-                    onChange={handleChange}
-                    required
-                    className="block w-full rounded-md border-2 border-[#003B46]/50 bg-[#070F12]/80 py-3 px-4 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
-                    placeholder="How can we help you?"
-                  />
-                </div>
+                    <div>
+                      <label htmlFor="subject" className="block text-sm font-medium text-gray-300 mb-1">
+                        Subject
+                      </label>
+                      <Field
+                        type="text"
+                        id="subject"
+                        name="subject"
+                        required
+                        className={`block w-full rounded-md border-2 border-[#003B46]/50 bg-[#070F12]/80 py-3 px-4 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all ${
+                          errors.subject && touched.subject ? "border-red-500" : ""
+                        }`}
+                        placeholder="How can we help you?"
+                      />
+                      <ErrorMessage name="subject" component="div" className="text-red-400 text-xs mt-1" />
+                    </div>
 
-                <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-1">
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    value={formState.message}
-                    onChange={handleChange}
-                    required
-                    rows={5}
-                    className="block w-full rounded-md border-2 border-[#003B46]/50 bg-[#070F12]/80 py-3 px-4 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
-                    placeholder="Tell us how we can assist you..."
-                  />
-                </div>
+                    <div>
+                      <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-1">
+                        Message
+                      </label>
+                      <Field
+                        as="textarea"
+                        id="message"
+                        name="message"
+                        required
+                        rows={5}
+                        className={`block w-full rounded-md border-2 border-[#003B46]/50 bg-[#070F12]/80 py-3 px-4 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all ${
+                          errors.message && touched.message ? "border-red-500" : ""
+                        }`}
+                        placeholder="Tell us how we can assist you..."
+                      />
+                      <ErrorMessage name="message" component="div" className="text-red-400 text-xs mt-1" />
+                    </div>
 
-                <div>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className={`w-full inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-[#006770] to-[#00A3A9] hover:from-[#00A3A9] hover:to-[#006770] transition-all ${isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:scale-105 active:scale-95"}`}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <svg
-                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        Send Message
-                        <Send className="ml-2 h-5 w-5" />
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
+                    <div>
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className={`w-full inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-[#006770] to-[#00A3A9] hover:from-[#00A3A9] hover:to-[#006770] transition-all ${
+                          isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:scale-105 active:scale-95"
+                        }`}
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <svg
+                              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                              ></path>
+                            </svg>
+                            Sending...
+                          </>
+                        ) : (
+                          <>
+                            Send Message
+                            <Send className="ml-2 h-5 w-5" />
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </Form>
+                )}
+              </Formik>
             )}
           </div>
 
