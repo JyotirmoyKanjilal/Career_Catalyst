@@ -26,7 +26,7 @@ api.interceptors.request.use(
 // Example: Get all questions
 export async function fetchQuestions() {
   try {
-    const response = await api.get('/api/questions/getall');
+    const response = await api.get('/questions/getall');
     return response.data;
   } catch (error) {
     throw new Error(error.message || "Failed to fetch questions");

@@ -771,9 +771,9 @@ export default function Contribution() {
               {/* Questions List */}
               {filteredQuestions.length > 0 ? (
                 <motion.div className="space-y-4" initial="hidden" animate="visible" variants={containerVariants}>
-                  {filteredQuestions.map((question) => (
+                  {filteredQuestions.map((question, index) => (
                     <motion.div
-                      key={question._id}
+                      key={question._id || question.id || index}
                       variants={itemVariants}
                       className={`bg-[#070F12]/80 backdrop-blur-sm rounded-xl p-5 border transition-all duration-300 hover:shadow-[#00A3A9]/10 group ${
                         selectedQuestion?._id === question._id
@@ -845,9 +845,9 @@ export default function Contribution() {
               {/* Contributions List */}
               {filteredContributions.length > 0 ? (
                 <motion.div className="space-y-4" initial="hidden" animate="visible" variants={containerVariants}>
-                  {sortedContributions.map((contribution) => (
+                  {sortedContributions.map((contribution, index) => (
                     <motion.div
-                      key={contribution.id}
+                      key={contribution.id || contribution._id || index}
                       variants={itemVariants}
                       className="bg-[#070F12]/80 backdrop-blur-sm rounded-xl p-5 border border-[#003B46]/20 shadow-xl transition-all duration-300 hover:border-[#00A3A9]/30 hover:shadow-[#00A3A9]/10 group"
                     >

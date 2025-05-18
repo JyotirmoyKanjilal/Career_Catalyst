@@ -186,7 +186,7 @@ export default function QuestionManager() {
   // Fetch questions from the backend
   const fetchQuestions = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/questions/getall`);
+      const response = await axios.get(`${API_URL}/questions/getall`);
       setQuestions(response.data);
     } catch (error) {
       console.error("Error fetching questions:", error);
@@ -215,7 +215,7 @@ export default function QuestionManager() {
         setSuccessMessage("Question updated successfully!");
       } else {
         // Add new question
-        const response = await axios.post(`${API_URL}/questions/add`, { ...newQuestion, answers: newAnswers });
+        const response = await axios.post(`${API_URL}/questions/add`, { ...newQuestion });
         setQuestions([...questions, response.data]);
         setSuccessMessage("Question added successfully!");
       }
