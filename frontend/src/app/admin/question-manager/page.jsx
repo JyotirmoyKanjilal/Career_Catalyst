@@ -637,7 +637,7 @@ export default function QuestionManager() {
             <motion.div className="space-y-4" initial="hidden" animate="visible" variants={containerVariants}>
               {sortedQuestions.map((question) => (
                 <motion.div
-                  key={question._id}
+                  key={question._id || question.id}
                   variants={itemVariants}
                   className="bg-[#070F12]/80 backdrop-blur-sm rounded-xl p-5 border border-[#003B46]/20 shadow-xl transition-all duration-300 hover:border-[#00A3A9]/30 hover:shadow-[#00A3A9]/10 group"
                 >

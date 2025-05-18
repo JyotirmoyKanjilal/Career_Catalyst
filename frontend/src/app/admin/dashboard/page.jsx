@@ -23,6 +23,7 @@ import {
 } from "lucide-react"
 import { getUsers, getContributions, getFeedback, getDiscussions, getUserGrowth, getReports } from "./actions"
 import { fetchQuestions } from "@/src/utils/api"
+import Link from "next/link"; // Add at the top if not already
 // import {set} from "mongoose"
 
 export default function AdminDashboard() {
@@ -739,6 +740,19 @@ export default function AdminDashboard() {
             <Settings size={20} className={sidebarOpen ? "mr-3" : ""} />
             {sidebarOpen && <span>Settings</span>}
           </button>
+
+          <Link
+            href="/admin/question-manager"
+            className={`w-full flex items-center p-3 ${
+              // Optionally highlight if on this page
+              typeof window !== "undefined" && window.location.pathname === "/admin/question-manager"
+                ? "bg-[#006770]"
+                : "hover:bg-[#004B56] transition-colors"
+            } ${!sidebarOpen && "justify-center"}`}
+          >
+            <FileQuestion size={20} className={sidebarOpen ? "mr-3" : ""} />
+            {sidebarOpen && <span>Question Manager</span>}
+          </Link>
         </div>
 
         {sidebarOpen && (
