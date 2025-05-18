@@ -937,7 +937,7 @@ export default function QuestionManager() {
                       <p className="mt-1 text-xs text-gray-400">Popular tags: {availableTags.slice(0, 5).join(", ")}</p>
                     </div>
 
-                    <div>
+                    {/* <div>
                       <label className="block text-sm font-medium text-gray-300 mb-1">Answers</label>
                       <div className="flex gap-2 mb-2">
                         <input
@@ -979,7 +979,7 @@ export default function QuestionManager() {
                           </li>
                         ))}
                       </ul>
-                    </div>
+                    </div> */}
 
                     <div className="flex justify-end space-x-3 pt-4">
                       <button
