@@ -157,3 +157,13 @@ export async function fetchDiscussionsByContribution(contributionId) {
     throw new Error(error.response?.data?.error || "Failed to fetch discussions");
   }
 }
+
+export async function submitContactForm(data) {
+  const res = await fetch(`${API_URL}/api/contact/add`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to submit contact form");
+  return res.json();
+}

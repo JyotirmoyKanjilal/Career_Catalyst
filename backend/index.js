@@ -26,7 +26,7 @@ app.use(cors({
 }))
 app.use(express.json());
 app.use('/user',UserRouter);
-app.use('/api/questions',QuestionRouter);
+app.use('/questions',QuestionRouter);
 app.use('/gemini',GeminiRouter);
 app.use('/api/feedback', feedbackRouter);
 app.use('/api/discussion', discussionRouter);

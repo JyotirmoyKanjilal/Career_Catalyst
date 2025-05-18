@@ -1424,171 +1424,167 @@ export default function ExpertFeedback() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 overflow-y-auto"
+              className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto"
             >
-              <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <div
-                  className="fixed inset-0 bg-[#070F12]/80 backdrop-blur-sm transition-opacity"
-                  onClick={() => setShowNewQueryForm(false)}
-                ></div>
+              {/* Overlay */}
+              <div
+                className="fixed inset-0 bg-[#070F12]/80 backdrop-blur-sm transition-opacity z-0"
+                onClick={() => setShowNewQueryForm(false)}
+              ></div>
 
-                <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
-                  &#8203;
-                </span>
-
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                  transition={{ duration: 0.3 }}
-                  className="inline-block align-bottom bg-[#070F12] border border-[#003B46]/50 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full"
-                >
-                  <div className="px-6 pt-5 pb-4 sm:p-6">
-                    <div className="flex items-start justify-between">
-                      <h3 className="text-lg font-medium leading-6 text-white flex items-center">
-                        <MessageSquare className="h-5 w-5 mr-2 text-[#00A3A9]" />
-                        Ask a Question
-                      </h3>
-                      <button
-                        onClick={() => setShowNewQueryForm(false)}
-                        className="bg-[#070F12] rounded-md text-gray-400 hover:text-white focus:outline-none"
-                      >
-                        <X className="h-6 w-6" />
-                      </button>
-                    </div>
-                    <div className="mt-5">
-                      <form onSubmit={submitQuery}>
-                        <div className="space-y-4">
-                          <div>
-                            <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-1">
-                              Question Title
-                            </label>
-                            <input
-                              type="text"
-                              id="title"
-                              value={newQuery.title}
-                              onChange={(e) =>
-                                setNewQuery({
-                                  ...newQuery,
-                                  title: e.target.value,
-                                })
-                              }
-                              placeholder="e.g., How to prepare for a system design interview?"
-                              className="block w-full rounded-md border border-[#003B46]/50 bg-[#070F12]/80 py-3 px-4 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
-                              required
-                            />
-                          </div>
-
-                          <div>
-                            <label htmlFor="content" className="block text-sm font-medium text-gray-300 mb-1">
-                              Question Details
-                            </label>
-                            <textarea
-                              id="content"
-                              value={newQuery.content}
-                              onChange={(e) =>
-                                setNewQuery({
-                                  ...newQuery,
-                                  content: e.target.value,
-                                })
-                              }
-                              rows={5}
-                              placeholder="Provide details about your question. The more specific you are, the better answers you'll receive."
-                              className="block w-full rounded-md border border-[#003B46]/50 bg-[#070F12]/80 py-3 px-4 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
-                              required
-                            ></textarea>
-                          </div>
-
-                          <div>
-                            <label htmlFor="category" className="block text-sm font-medium text-gray-300 mb-1">
-                              Category
-                            </label>
-                            <select
-                              id="category"
-                              value={newQuery.category}
-                              onChange={(e) =>
-                                setNewQuery({
-                                  ...newQuery,
-                                  category: e.target.value,
-                                })
-                              }
-                              className="block w-full rounded-md border border-[#003B46]/50 bg-[#070F12]/80 py-3 px-4 text-gray-100 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
-                              required
-                            >
-                              <option value="" disabled>
-                                Select a category
-                              </option>
-                              <option value="System Design">System Design</option>
-                              <option value="Algorithms">Algorithms</option>
-                              <option value="Behavioral">Behavioral</option>
-                              <option value="Technical">Technical</option>
-                              <option value="Career Advice">Career Advice</option>
-                            </select>
-                          </div>
-
-                          <div>
-                            <label htmlFor="tags" className="block text-sm font-medium text-gray-300 mb-1">
-                              Tags (press Enter to add)
-                            </label>
-                            <div className="flex items-center space-x-2">
-                              <div className="relative flex-grow">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                  <Tag className="h-4 w-4 text-gray-400" />
-                                </div>
-                                <input
-                                  type="text"
-                                  id="tags"
-                                  value={tagInput}
-                                  onChange={(e) => setTagInput(e.target.value)}
-                                  onKeyDown={handleTagInput}
-                                  placeholder="e.g., interviews, algorithms, career"
-                                  className="block w-full pl-10 pr-3 py-3 border border-[#003B46]/50 bg-[#070F12]/80 rounded-md text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
-                                />
-                              </div>
-                            </div>
-                            {newQuery.tags.length > 0 && (
-                              <div className="flex flex-wrap gap-2 mt-2">
-                                {newQuery.tags.map((tag) => (
-                                  <span
-                                    key={tag}
-                                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#003B46]/30 text-gray-300"
-                                  >
-                                    {tag}
-                                    <button
-                                      type="button"
-                                      onClick={() => removeTag(tag)}
-                                      className="ml-1.5 text-gray-400 hover:text-white"
-                                    >
-                                      <X className="h-3 w-3" />
-                                    </button>
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="mt-6 flex justify-end space-x-3">
-                          <button
-                            type="button"
-                            onClick={() => setShowNewQueryForm(false)}
-                            className="inline-flex items-center px-4 py-2 border border-[#003B46]/50 rounded-md text-sm font-medium text-white hover:bg-[#003B46]/20 transition-all"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="submit"
-                            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-[#006770] to-[#00A3A9] hover:from-[#00A3A9] hover:to-[#006770] transition-all hover:shadow-lg hover:shadow-[#00A3A9]/20"
-                          >
-                            <Send className="h-4 w-4 mr-2" />
-                            <span>Submit Question</span>
-                          </button>
-                        </div>
-                      </form>
-                    </div>
+              {/* Modal Content */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ duration: 0.3 }}
+                className="relative z-10 inline-block align-bottom bg-[#070F12] border border-[#003B46]/50 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full"
+              >
+                <div className="px-6 pt-5 pb-4 sm:p-6">
+                  <div className="flex items-start justify-between">
+                    <h3 className="text-lg font-medium leading-6 text-white flex items-center">
+                      <MessageSquare className="h-5 w-5 mr-2 text-[#00A3A9]" />
+                      Ask a Question
+                    </h3>
+                    <button
+                      onClick={() => setShowNewQueryForm(false)}
+                      className="bg-[#070F12] rounded-md text-gray-400 hover:text-white focus:outline-none"
+                    >
+                      <X className="h-6 w-6" />
+                    </button>
                   </div>
-                </motion.div>
-              </div>
+                  <div className="mt-5">
+                    <form onSubmit={submitQuery}>
+                      <div className="space-y-4">
+                        <div>
+                          <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-1">
+                            Question Title
+                          </label>
+                          <input
+                            type="text"
+                            id="title"
+                            value={newQuery.title}
+                            onChange={(e) =>
+                              setNewQuery({
+                                ...newQuery,
+                                title: e.target.value,
+                              })
+                            }
+                            placeholder="e.g., How to prepare for a system design interview?"
+                            className="block w-full rounded-md border border-[#003B46]/50 bg-[#070F12]/80 py-3 px-4 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label htmlFor="content" className="block text-sm font-medium text-gray-300 mb-1">
+                            Question Details
+                          </label>
+                          <textarea
+                            id="content"
+                            value={newQuery.content}
+                            onChange={(e) =>
+                              setNewQuery({
+                                ...newQuery,
+                                content: e.target.value,
+                              })
+                            }
+                            rows={5}
+                            placeholder="Provide details about your question. The more specific you are, the better answers you'll receive."
+                            className="block w-full rounded-md border border-[#003B46]/50 bg-[#070F12]/80 py-3 px-4 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
+                            required
+                          ></textarea>
+                        </div>
+
+                        <div>
+                          <label htmlFor="category" className="block text-sm font-medium text-gray-300 mb-1">
+                            Category
+                          </label>
+                          <select
+                            id="category"
+                            value={newQuery.category}
+                            onChange={(e) =>
+                              setNewQuery({
+                                ...newQuery,
+                                category: e.target.value,
+                              })
+                            }
+                            className="block w-full rounded-md border border-[#003B46]/50 bg-[#070F12]/80 py-3 px-4 text-gray-100 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
+                            required
+                          >
+                            <option value="" disabled>
+                              Select a category
+                            </option>
+                            <option value="System Design">System Design</option>
+                            <option value="Algorithms">Algorithms</option>
+                            <option value="Behavioral">Behavioral</option>
+                            <option value="Technical">Technical</option>
+                            <option value="Career Advice">Career Advice</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label htmlFor="tags" className="block text-sm font-medium text-gray-300 mb-1">
+                            Tags (press Enter to add)
+                          </label>
+                          <div className="flex items-center space-x-2">
+                            <div className="relative flex-grow">
+                              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Tag className="h-4 w-4 text-gray-400" />
+                              </div>
+                              <input
+                                type="text"
+                                id="tags"
+                                value={tagInput}
+                                onChange={(e) => setTagInput(e.target.value)}
+                                onKeyDown={handleTagInput}
+                                placeholder="e.g., interviews, algorithms, career"
+                                className="block w-full pl-10 pr-3 py-3 border border-[#003B46]/50 bg-[#070F12]/80 rounded-md text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
+                              />
+                            </div>
+                          </div>
+                          {newQuery.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {newQuery.tags.map((tag) => (
+                                <span
+                                  key={tag}
+                                  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#003B46]/30 text-gray-300"
+                                >
+                                  {tag}
+                                  <button
+                                    type="button"
+                                    onClick={() => removeTag(tag)}
+                                    className="ml-1.5 text-gray-400 hover:text-white"
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </button>
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="mt-6 flex justify-end space-x-3">
+                        <button
+                          type="button"
+                          onClick={() => setShowNewQueryForm(false)}
+                          className="inline-flex items-center px-4 py-2 border border-[#003B46]/50 rounded-md text-sm font-medium text-white hover:bg-[#003B46]/20 transition-all"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-[#006770] to-[#00A3A9] hover:from-[#00A3A9] hover:to-[#006770] transition-all hover:shadow-lg hover:shadow-[#00A3A9]/20"
+                        >
+                          <Send className="h-4 w-4 mr-2" />
+                          <span>Submit Question</span>
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
