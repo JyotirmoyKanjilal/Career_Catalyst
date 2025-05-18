@@ -36,7 +36,7 @@ import {
   MessageCircle,
   ExternalLink,
 } from "lucide-react"
-import { fetchExpertFeedbacks, addExpertFeedback, fetchFeedbacksByQuery, fetchQuestionsWithMetadata } from "../../utils/api"
+import { fetchExpertFeedbacks, addExpertFeedback, fetchResponsesByQuery, fetchQuestionsWithMetadata, addExpertResponse } from "../../utils/api"
 import { submitQuery } from "./actions" // Add this import
 
 // Mock data for experts
@@ -204,6 +204,7 @@ export default function ExpertFeedback() {
   const [newFeedback, setNewFeedback] = useState({})
   const [feedbackText, setFeedbackText] = useState("")
   const [rating, setRating] = useState(5)
+  const [queryResponses, setQueryResponses] = useState({});
 
   // Form state
   const [newQuery, setNewQuery] = useState({
@@ -399,22 +400,34 @@ export default function ExpertFeedback() {
   }
 
   // Submit new response
-  const submitResponse = (queryId) => {
-    if (newResponse.trim() === "") return
-
-    showNotificationMessage("Your response has been submitted")
-    setNewResponse("")
-    // In a real app, you would save the response to a database here
+  const submitResponse = async (queryId) => {
+    if (!newResponse.trim()) return;
+    try {
+      await addExpertResponse({
+        queryId,
+        expertId: currentUser._id, // Use MongoDB ObjectId, not mock id!
+        content: newResponse,
+      });
+      showNotificationMessage("Your response has been submitted");
+      setNewResponse("");
+      // Refresh responses
+      const responses = await fetchResponsesByQuery(queryId);
+      setQueryResponses((prev) => ({ ...prev, [queryId]: responses }));
+    } catch (error) {
+      showNotificationMessage("Failed to submit response");
+      // Optionally log error for debugging:
+      // console.error(error);
+    }
   }
 
   const handleExpandQuery = async (queryId) => {
     setExpandedQuery(expandedQuery === queryId ? null : queryId);
     if (expandedQuery !== queryId) {
       try {
-        const feedbacks = await fetchFeedbacksByQuery(queryId);
-        setQueryFeedbacks((prev) => ({ ...prev, [queryId]: feedbacks }));
+        const responses = await fetchResponsesByQuery(queryId);
+        setQueryResponses((prev) => ({ ...prev, [queryId]: responses }));
       } catch (err) {
-        setQueryFeedbacks((prev) => ({ ...prev, [queryId]: [] }));
+        setQueryResponses((prev) => ({ ...prev, [queryId]: [] }));
       }
     }
   };
@@ -457,6 +470,9 @@ export default function ExpertFeedback() {
       transition: { duration: 0.5 },
     },
   }
+
+  // Example: get current user from context or props
+  const currentUser = { role: "expert", id: "EXPERT_ID" }; // Replace with real user logic
 
   return (
     <div className="min-h-screen bg-[#070F12] text-gray-100 overflow-hidden">
@@ -925,7 +941,7 @@ export default function ExpertFeedback() {
                           <div className="flex items-center">
                             <MessageSquare className="h-4 w-4 mr-1" />
                             <span>
-                              {query.responses.length} {query.responses.length === 1 ? "response" : "responses"}
+                              {(queryResponses[query.id] || []).length} {(queryResponses[query.id] || []).length === 1 ? "response" : "responses"}
                             </span>
                           </div>
                         </div>
@@ -985,10 +1001,12 @@ export default function ExpertFeedback() {
                                 <h4 className="text-lg font-medium text-white flex items-center">
                                   <MessageSquare className="h-5 w-5 mr-2 text-[#00A3A9]" />
                                   Expert Responses{" "}
-                                  <span className="ml-2 text-sm text-gray-400">({query.responses.length})</span>
+                                  <span className="ml-2 text-sm text-gray-400">
+                                    ({(queryResponses[query.id] || []).length})
+                                  </span>
                                 </h4>
 
-                                {query.responses.length === 0 ? (
+                                {(queryResponses[query.id] || []).length === 0 ? (
                                   <div className="text-center py-8 border border-dashed border-[#003B46]/30 rounded-lg">
                                     <MessageSquare className="h-10 w-10 text-[#003B46]/50 mx-auto mb-3" />
                                     <p className="text-gray-400 mb-2">No responses yet</p>
@@ -996,7 +1014,7 @@ export default function ExpertFeedback() {
                                   </div>
                                 ) : (
                                   <div className="space-y-6">
-                                    {query.responses.map((response) => (
+                                    {queryResponses[query.id].map((response) => (
                                       <motion.div
                                         key={response.id}
                                         initial={{ opacity: 0, y: 10 }}
@@ -1063,73 +1081,36 @@ export default function ExpertFeedback() {
                                 )}
 
                                 {/* Add Response Form */}
-                                <div className="mt-6 pt-6 border-t border-[#003B46]/30">
-                                  <h4 className="text-lg font-medium text-white mb-4">Add Your Response</h4>
-                                  <div className="mb-4">
-                                    <textarea
-                                      value={newResponse}
-                                      onChange={(e) => setNewResponse(e.target.value)}
-                                      placeholder="Share your expertise and help this student..."
-                                      rows={5}
-                                      className="block w-full rounded-md border border-[#003B46]/50 bg-[#070F12]/80 py-3 px-4 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
-                                    ></textarea>
-                                  </div>
-                                  <div className="flex items-center justify-between">
-                                    <div className="flex space-x-2">
-                                      {/* <button className="p-2 text-gray-400 hover:text-gray-300 rounded-md hover:bg-[#003B46]/30 transition-colors">
-                                        <Paperclip className="h-5 w-5" />
-                                      </button>
-                                      <button className="p-2 text-gray-400 hover:text-gray-300 rounded-md hover:bg-[#003B46]/30 transition-colors">
-                                        <ImageIcon className="h-5 w-5" />
-                                      </button>
-                                      <button className="p-2 text-gray-400 hover:text-gray-300 rounded-md hover:bg-[#003B46]/30 transition-colors">
-                                        <Code className="h-5 w-5" />
-                                      </button> */}
+                                {currentUser.role === "expert" && (
+                                  <div className="mt-6 pt-6 border-t border-[#003B46]/30">
+                                    <h4 className="text-lg font-medium text-white mb-4">Add Your Response</h4>
+                                    <div className="mb-4">
+                                      <textarea
+                                        id="expert-response"
+                                        name="expert-response"
+                                        value={newResponse}
+                                        onChange={(e) => setNewResponse(e.target.value)}
+                                        placeholder="Share your expertise and help this student..."
+                                        rows={5}
+                                        className="block w-full rounded-md border border-[#003B46]/50 bg-[#070F12]/80 py-3 px-4 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
+                                      ></textarea>
                                     </div>
-                                    <button
-                                      onClick={() => submitResponse(query.id)}
-                                      disabled={!newResponse.trim()}
-                                      className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
-                                        newResponse.trim()
-                                          ? "bg-gradient-to-r from-[#006770] to-[#00A3A9] hover:from-[#00A3A9] hover:to-[#006770] transition-all hover:shadow-lg hover:shadow-[#00A3A9]/20"
-                                          : "bg-[#003B46]/50 cursor-not-allowed"
-                                      }`}
-                                    >
-                                      <Send className="h-4 w-4 mr-2" />
-                                      <span>Submit Response</span>
-                                    </button>
+                                    <div className="flex items-center justify-between">
+                                      <button
+                                        onClick={() => submitResponse(query.id)}
+                                        disabled={!newResponse.trim()}
+                                        className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
+                                          newResponse.trim()
+                                            ? "bg-gradient-to-r from-[#006770] to-[#00A3A9] hover:from-[#00A3A9] hover:to-[#006770] transition-all hover:shadow-lg hover:shadow-[#00A3A9]/20"
+                                            : "bg-[#003B46]/50 cursor-not-allowed"
+                                        }`}
+                                      >
+                                        <Send className="h-4 w-4 mr-2" />
+                                        <span>Submit Response</span>
+                                      </button>
+                                    </div>
                                   </div>
-                                </div>
-
-                                {/* Add Feedback Form */}
-                                {/* <div className="mt-6 pt-6 border-t border-[#003B46]/30">
-                                  <h4 className="text-lg font-medium text-white mb-4">Add Your Feedback</h4>
-                                  <div className="mb-4">
-                                    <textarea
-                                      value={newFeedback[query.id] || ""}
-                                      onChange={(e) =>
-                                        setNewFeedback((prev) => ({ ...prev, [query.id]: e.target.value }))
-                                      }
-                                      placeholder="Share your expert feedback..."
-                                      rows={5}
-                                      className="block w-full rounded-md border border-[#003B46]/50 bg-[#070F12]/80 py-3 px-4 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
-                                    ></textarea>
-                                  </div>
-                                  <div className="flex items-center justify-end">
-                                    <button
-                                      onClick={() => handleAddFeedback(query.id)}
-                                      disabled={!newFeedback[query.id] || !newFeedback[query.id].trim()}
-                                      className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
-                                        newFeedback[query.id] && newFeedback[query.id].trim()
-                                          ? "bg-gradient-to-r from-[#006770] to-[#00A3A9] hover:from-[#00A3A9] hover:to-[#006770] transition-all hover:shadow-lg hover:shadow-[#00A3A9]/20"
-                                          : "bg-[#003B46]/50 cursor-not-allowed"
-                                      }`}
-                                    >
-                                      <Send className="h-4 w-4 mr-2" />
-                                      <span>Submit Feedback</span>
-                                    </button>
-                                  </div>
-                                </div> */}
+                                )}
                               </div>
 
                               {/* Expert Feedbacks */}
@@ -1370,7 +1351,7 @@ export default function ExpertFeedback() {
                           <div className="flex items-center">
                             <MessageSquare className="h-4 w-4 mr-1" />
                             <span>
-                              {query.responses.length} {query.responses.length === 1 ? "response" : "responses"}
+                              {(queryResponses[query.id] || []).length} {(queryResponses[query.id] || []).length === 1 ? "response" : "responses"}
                             </span>
                           </div>
                         </div>
@@ -1695,7 +1676,7 @@ export default function ExpertFeedback() {
 
                         <div className="grid grid-cols-3 gap-4 mb-6">
                           <div className="bg-[#003B46]/20 rounded-lg p-4 text-center">
-                            <div className="text-2xl font-bold text-[#00A3A9]">{expert.stats.questionsAnswered}</div>
+                            <div className="text-2xl font-bold text-[#00A3A9]">{expert.stats.questionsAnswered}</div>                            
                             <div className="text-sm text-gray-400">Questions Answered</div>
                           </div>
                           <div className="bg-[#003B46]/20 rounded-lg p-4 text-center">

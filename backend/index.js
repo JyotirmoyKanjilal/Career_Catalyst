@@ -28,7 +28,7 @@ app.use(express.json());
 app.use('/user',UserRouter);
 app.use('/questions',QuestionRouter);
 app.use('/gemini',GeminiRouter);
-app.use('/api/feedback', feedbackRouter);
+app.use('/api', require('./routers/feedbackRouter'));
 app.use('/api/discussion', discussionRouter);
 app.use('/api/ai-answer', aiAnswerRouter);
 app.use('/api/contributions', contributionRouter);

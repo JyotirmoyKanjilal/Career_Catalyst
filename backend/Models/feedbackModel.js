@@ -11,4 +11,4 @@ const expertFeedbackSchema = new Schema({
     isVerified: { type: Boolean, default: false }, // Whether the feedback is verified
 });
 
-module.exports = model('expertFeedbacks', expertFeedbackSchema);
+module.exports = model('expertFeedbacks', expertFeedbackSchema); 

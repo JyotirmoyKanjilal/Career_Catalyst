@@ -227,3 +227,20 @@ export async function fetchFeedbacksByQuery(queryId) {
     throw new Error(error.message || "Failed to fetch feedbacks for query");
   }
 }
+
+export async function fetchResponsesByQuery(queryId) {
+  const res = await fetch(`/api/queries/${queryId}/responses`);
+  return res.json();
+}
+
+export async function addExpertResponse({ queryId, expertId, content }) {
+  const response = await fetch(`/api/queries/${queryId}/responses`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ expertId, content }),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to add response");
+  }
+  return response.json();
+}
