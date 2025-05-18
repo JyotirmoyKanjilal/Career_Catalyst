@@ -169,13 +169,13 @@ export default function About() {
                 name: "Jyotirmoy Kanjilal",
                 role: "Founder & CEO",
                 bio: "",
-                image: "/placeholder.svg?height=300&width=300",
+                image: "/Jyotirmoy.jpg?height=300&width=300",
               },
               {
                 name: "Yash Kumar",
                 role: "Chief AI Officer",
                 bio: "",
-                image: "/placeholder.svg?height=300&width=300",
+                image: "/Yash.jpg?height=300&width=300",
               },
               
             ].map((member, index) => (
