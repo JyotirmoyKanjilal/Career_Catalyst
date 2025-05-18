@@ -16,6 +16,10 @@ api.interceptors.request.use(
     if (token) {
       config.headers['x-auth-token'] = token;
     }
+    const expertToken = localStorage.getItem('expert-token');
+    if (expertToken) {
+      config.headers['x-expert-token'] = expertToken;
+    }
     return config;
   },
   (error) => {
@@ -30,6 +34,32 @@ export async function fetchQuestions() {
     return response.data;
   } catch (error) {
     throw new Error(error.message || "Failed to fetch questions");
+  }
+}
+
+// Fetch questions with metadata for expert feedback
+export async function fetchQuestionsWithMetadata() {
+  try {
+    const response = await api.get('/questions/getall');
+    return response.data.map(question => ({
+      id: question._id,
+      title: question.question,
+      content: question.question,
+      category: question.category,
+      tags: question.tags,
+      student: {
+        name: "Anonymous", // Could be enhanced with real user data
+        avatar: "/placeholder.svg?height=100&width=100"
+      },
+      date: new Date(question.createdAt).toLocaleDateString(),
+      status: question.answers > 0 ? "answered" : "pending",
+      upvotes: 0,
+      views: question.views,
+      bookmarked: question.saved,
+      responses: []
+    }));
+  } catch (error) {
+    throw new Error(error.message || "Failed to fetch questions with metadata");
   }
 }
 
@@ -166,4 +196,34 @@ export async function submitContactForm(data) {
   });
   if (!res.ok) throw new Error("Failed to submit contact form");
   return res.json();
+}
+
+// Fetch all expert feedbacks
+export async function fetchExpertFeedbacks() {
+  try {
+    const response = await api.get('/api/feedback/getall');
+    return response.data;
+  } catch (error) {
+    throw new Error(error.message || "Failed to fetch expert feedbacks");
+  }
+}
+
+// Add new expert feedback
+export async function addExpertFeedback(feedback) {
+  try {
+    const response = await api.post('/api/feedback/add', feedback);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.message || "Failed to submit feedback");
+  }
+}
+
+// Fetch feedbacks for a specific query
+export async function fetchFeedbacksByQuery(queryId) {
+  try {
+    const response = await api.get(`/api/feedback/getbyquery/${queryId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.message || "Failed to fetch feedbacks for query");
+  }
 }

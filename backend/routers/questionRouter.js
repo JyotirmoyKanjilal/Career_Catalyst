@@ -1,10 +1,12 @@
 const express = require('express');
+const multer = require('multer');
 const QuestionModel = require('../Models/questionModel');
 
 const router = express.Router();
 
 // Add a new question
-router.post('/add', (req, res) => {
+router.post('/add', multer().none(), (req, res) => {
+    console.log('Received body:', req.body); // Debug log
     new QuestionModel(req.body)
         .save()
         .then((result) => {

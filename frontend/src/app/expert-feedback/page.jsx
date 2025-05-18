@@ -36,6 +36,8 @@ import {
   MessageCircle,
   ExternalLink,
 } from "lucide-react"
+import { fetchExpertFeedbacks, addExpertFeedback, fetchFeedbacksByQuery, fetchQuestionsWithMetadata } from "../../utils/api"
+import { submitQuery } from "./actions" // Add this import
 
 // Mock data for experts
 const EXPERTS = [
@@ -126,158 +128,6 @@ const EXPERTS = [
   },
 ]
 
-// Mock data for queries
-const QUERIES = [
-  {
-    id: 1,
-    title: "How to approach system design interviews for a mid-level position?",
-    content:
-      "I have an upcoming system design interview for a mid-level software engineer position. What's the best approach to tackle these kinds of interviews? Any specific frameworks or methodologies I should follow?",
-    category: "System Design",
-    tags: ["interviews", "system design", "preparation"],
-    student: {
-      name: "Alex Thompson",
-      avatar: "/placeholder.svg?height=100&width=100",
-    },
-    date: "2 days ago",
-    status: "answered",
-    upvotes: 24,
-    views: 156,
-    bookmarked: false,
-    responses: [
-      {
-        id: 101,
-        expert: EXPERTS[0],
-        content:
-          "Great question, Alex! For mid-level system design interviews, focus on these key areas:\n\n1. **Requirements clarification**: Always start by asking questions to understand the problem scope. What features are needed? What scale are we talking about?\n\n2. **High-level design**: Sketch the major components of your system. Don't dive into details too early.\n\n3. **Data model**: Define the key entities and relationships.\n\n4. **API design**: Outline the main endpoints your system would expose.\n\n5. **Scalability considerations**: Discuss how your system would handle increased load.\n\nRemember, the interviewer is more interested in your thought process than a perfect solution. Talk through your decisions and tradeoffs clearly.\n\nI recommend practicing with common problems like designing a URL shortener, a social media feed, or a simple e-commerce platform. Good luck!",
-        date: "1 day ago",
-        upvotes: 18,
-        isVerified: true,
-      },
-      {
-        id: 102,
-        expert: EXPERTS[4],
-        content:
-          "To add to Dr. Johnson's excellent advice, I'd emphasize the importance of understanding scalability patterns. For a mid-level position, you should be familiar with:\n\n- Caching strategies\n- Database sharding\n- Load balancing\n- Microservices vs. monoliths\n\nAlso, be prepared to discuss non-functional requirements like reliability, availability, and security. These often separate a good design from a great one.\n\nOne approach I recommend to my mentees is the STAR method for system design:\n- **Scope**: Define what you're building\n- **Think**: Consider the scale and constraints\n- **Architect**: Design the high-level components\n- **Refine**: Optimize and address bottlenecks\n\nBest of luck with your interview!",
-        date: "12 hours ago",
-        upvotes: 12,
-        isVerified: true,
-      },
-    ],
-  },
-  {
-    id: 2,
-    title: "Behavioral interview preparation for product management roles",
-    content:
-      "I'm preparing for behavioral interviews for a product management position. What are some common questions I should prepare for, and what's the best framework to structure my answers?",
-    category: "Behavioral",
-    tags: ["product management", "behavioral", "STAR method"],
-    student: {
-      name: "Maya Patel",
-      avatar: "/placeholder.svg?height=100&width=100",
-    },
-    date: "3 days ago",
-    status: "answered",
-    upvotes: 32,
-    views: 203,
-    bookmarked: true,
-    responses: [
-      {
-        id: 201,
-        expert: EXPERTS[2],
-        content:
-          "Hi Maya! For product management behavioral interviews, you'll want to prepare stories that demonstrate your product thinking, leadership, and execution skills.\n\nCommon questions include:\n\n1. Tell me about a time you launched a successful product\n2. How do you prioritize features?\n3. Describe a situation where you had to make a difficult product decision\n4. How do you work with engineering teams?\n5. Tell me about a product you admire and why\n\nThe STAR method (Situation, Task, Action, Result) is perfect for structuring your answers. Make sure each story highlights a specific skill relevant to product management.\n\nI also recommend preparing a product portfolio - 3-4 detailed examples of products you've worked on, problems you've solved, and the impact you've made. This will give you a solid foundation for most behavioral questions.\n\nBest of luck with your interviews!",
-        date: "2 days ago",
-        upvotes: 27,
-        isVerified: true,
-      },
-    ],
-  },
-  {
-    id: 3,
-    title: "How to prepare for frontend coding challenges?",
-    content:
-      "I have several frontend developer interviews coming up, and I'm worried about the coding challenges. What types of challenges should I expect, and how should I prepare for them?",
-    category: "Technical",
-    tags: ["frontend", "coding challenges", "JavaScript"],
-    student: {
-      name: "Jordan Lee",
-      avatar: "/placeholder.svg?height=100&width=100",
-    },
-    date: "4 days ago",
-    status: "pending",
-    upvotes: 18,
-    views: 142,
-    bookmarked: false,
-    responses: [],
-  },
-  {
-    id: 4,
-    title: "Data structure topics for entry-level software engineer interviews",
-    content:
-      "I'm a recent CS graduate preparing for entry-level software engineer interviews. Which data structures and algorithms should I focus on the most? Are there any specific problems that come up frequently?",
-    category: "Algorithms",
-    tags: ["data structures", "algorithms", "entry-level"],
-    student: {
-      name: "Tyler Johnson",
-      avatar: "/placeholder.svg?height=100&width=100",
-    },
-    date: "1 week ago",
-    status: "answered",
-    upvotes: 45,
-    views: 312,
-    bookmarked: true,
-    responses: [
-      {
-        id: 401,
-        expert: EXPERTS[0],
-        content:
-          "Hi Tyler! For entry-level software engineering roles, you should have a solid understanding of these fundamental data structures and algorithms:\n\n**Data Structures:**\n- Arrays and Strings\n- Linked Lists (singly and doubly linked)\n- Stacks and Queues\n- Hash Tables\n- Trees (Binary Trees, Binary Search Trees)\n- Heaps\n- Graphs (representation, traversal)\n\n**Algorithms:**\n- Sorting (quicksort, mergesort, etc.)\n- Binary Search\n- BFS and DFS\n- Dynamic Programming (basic)\n- Recursion\n\nCommon problems include:\n1. Two-pointer techniques\n2. Sliding window problems\n3. Tree traversals\n4. Graph traversals\n5. String manipulation\n\nI recommend solving 2-3 problems daily on platforms like LeetCode, focusing on easy and medium difficulty problems. Start with array and string problems, then gradually move to more complex data structures.\n\nAlso, don't just memorize solutions - understand the patterns and techniques. Being able to explain your thought process is just as important as getting to the right answer.\n\nGood luck with your preparation!",
-        date: "6 days ago",
-        upvotes: 38,
-        isVerified: true,
-      },
-      {
-        id: 402,
-        expert: EXPERTS[1],
-        content:
-          "To add to Dr. Johnson's comprehensive list, I'd also recommend practicing these specific problem types that I've seen frequently in entry-level interviews:\n\n1. **String manipulation**: Palindrome checking, anagrams, substring problems\n2. **Array operations**: Finding duplicates, merging sorted arrays, subarray sums\n3. **Simple tree problems**: Height calculation, validation, path finding\n4. **Basic dynamic programming**: Fibonacci, climbing stairs, coin change\n\nFor frontend roles specifically, also focus on:\n- JavaScript-specific questions (closures, promises, event loop)\n- DOM manipulation problems\n- Simple UI component implementation\n\nA strategy that worked well for my mentees: pick one data structure per week and solve 5-10 problems focused on it. This builds depth of understanding rather than just breadth.\n\nAlso, mock interviews are invaluable - find a study buddy or use a platform that offers practice interviews to get comfortable explaining your solutions out loud.\n\nYou've got this!",
-        date: "5 days ago",
-        upvotes: 22,
-        isVerified: true,
-      },
-    ],
-  },
-  {
-    id: 5,
-    title: "How to negotiate salary for a senior developer position?",
-    content:
-      "I've received an offer for a senior developer role, but the salary is lower than I expected. What's the best approach to negotiate without risking the offer? Are there specific benefits or perks I should prioritize besides base salary?",
-    category: "Career Advice",
-    tags: ["salary negotiation", "senior developer", "job offers"],
-    student: {
-      name: "Sam Rivera",
-      avatar: "/placeholder.svg?height=100&width=100",
-    },
-    date: "5 days ago",
-    status: "answered",
-    upvotes: 37,
-    views: 245,
-    bookmarked: false,
-    responses: [
-      {
-        id: 501,
-        expert: EXPERTS[4],
-        content:
-          "Congratulations on your offer, Sam! Salary negotiation is an important skill, especially for senior roles. Here's my approach:\n\n1. **Do your research**: Use sites like Glassdoor, Levels.fyi, and Blind to understand the market rate for your role, location, and experience level. This gives you concrete data to support your ask.\n\n2. **Focus on value**: When negotiating, emphasize the specific value you'll bring to the company. Highlight relevant experience, specialized skills, or past achievements that justify a higher compensation.\n\n3. **Consider the total package**: Base salary is important, but also evaluate:\n   - Equity/stock options (often a significant portion of tech compensation)\n   - Signing bonus\n   - Performance bonuses\n   - Retirement benefits (401k matching)\n   - Health insurance quality\n   - PTO and flexible work arrangements\n   - Professional development budget\n\n4. **Use a collaborative tone**: Frame the negotiation as finding a win-win solution, not a confrontation. Something like: \"I'm excited about this role and want to make it work. The base salary is lower than I was expecting based on market research and my experience. Can we discuss ways to bridge this gap?\"\n\n5. **Have a clear target**: Know your walk-away number, but don't reveal it. Instead, give a salary range with your target number at the lower end.\n\nRemember, most companies expect negotiation, especially for senior roles. A reasonable request with proper justification won't risk your offer.\n\nGood luck!",
-        date: "3 days ago",
-        upvotes: 31,
-        isVerified: true,
-      },
-    ],
-  },
-]
-
 // Categories for filtering
 const CATEGORIES = [
   { id: "all", name: "All Categories", icon: <Layers className="h-4 w-4" /> },
@@ -340,7 +190,6 @@ export default function ExpertFeedback() {
   const [expandedQuery, setExpandedQuery] = useState(null)
   const [showNewQueryForm, setShowNewQueryForm] = useState(false)
   const [showExpertDetails, setShowExpertDetails] = useState(null)
-  const [bookmarkedQueries, setBookmarkedQueries] = useState(QUERIES.filter((q) => q.bookmarked).map((q) => q.id))
   const [upvotedQueries, setUpvotedQueries] = useState([])
   const [upvotedResponses, setUpvotedResponses] = useState([])
   const [showNotification, setShowNotification] = useState(false)
@@ -348,12 +197,20 @@ export default function ExpertFeedback() {
   const [isLoading, setIsLoading] = useState(true)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [queries, setQueries] = useState([])
+  const [bookmarkedQueries, setBookmarkedQueries] = useState([])
+  const [feedbacks, setFeedbacks] = useState([])
+  const [queryFeedbacks, setQueryFeedbacks] = useState({})
+  const [newFeedback, setNewFeedback] = useState({})
+  const [feedbackText, setFeedbackText] = useState("")
+  const [rating, setRating] = useState(5)
 
   // Form state
   const [newQuery, setNewQuery] = useState({
     title: "",
     content: "",
     category: "",
+    difficulty: "Easy",
     tags: [],
   })
   const [newResponse, setNewResponse] = useState("")
@@ -393,8 +250,28 @@ export default function ExpertFeedback() {
     }
   }, [showNotification])
 
+  useEffect(() => {
+    fetchExpertFeedbacks().then(setFeedbacks).catch(console.error);
+  }, []);
+
+  // Fetch questions on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const questionsData = await fetchQuestionsWithMetadata();
+        setQueries(questionsData);
+        setBookmarkedQueries(questionsData.filter(q => q.bookmarked).map(q => q.id));
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Failed to fetch questions:', error);
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
   // Filter queries based on search, category, and tags
-  const filteredQueries = QUERIES.filter((query) => {
+  const filteredQueries = queries.filter((query) => {
     // Filter by search query
     const matchesSearch =
       searchQuery === "" ||
@@ -498,17 +375,27 @@ export default function ExpertFeedback() {
   }
 
   // Submit new query
-  const submitQuery = (e) => {
-    e.preventDefault()
-    showNotificationMessage("Your query has been submitted")
-    setShowNewQueryForm(false)
-    setNewQuery({
-      title: "",
-      content: "",
-      category: "",
-      tags: [],
-    })
-    // In a real app, you would save the query to a database here
+  const handleSubmitQuery = async (formData) => {
+    const result = await submitQuery(formData);
+    
+    if (result.success) {
+      showNotificationMessage(result.message);
+      setShowNewQueryForm(false);
+      setNewQuery({
+        title: "",
+        content: "",
+        category: "",
+        difficulty: "Easy",
+        tags: [],
+      });
+      
+      // Refresh questions list
+      const questionsData = await fetchQuestionsWithMetadata();
+      setQueries(questionsData);
+      setBookmarkedQueries(questionsData.filter(q => q.bookmarked).map(q => q.id));
+    } else {
+      showNotificationMessage(result.message || "Failed to submit question");
+    }
   }
 
   // Submit new response
@@ -519,6 +406,29 @@ export default function ExpertFeedback() {
     setNewResponse("")
     // In a real app, you would save the response to a database here
   }
+
+  const handleExpandQuery = async (queryId) => {
+    setExpandedQuery(expandedQuery === queryId ? null : queryId);
+    if (expandedQuery !== queryId) {
+      try {
+        const feedbacks = await fetchFeedbacksByQuery(queryId);
+        setQueryFeedbacks((prev) => ({ ...prev, [queryId]: feedbacks }));
+      } catch (err) {
+        setQueryFeedbacks((prev) => ({ ...prev, [queryId]: [] }));
+      }
+    }
+  };
+
+  const handleAddFeedback = async (queryId, expertId) => {
+    await addExpertFeedback({
+      queryId,
+      expertId,
+      content: feedbackText,
+      rating,
+    });
+    setFeedbackText("");
+    handleFetchFeedbacks(queryId); // Refresh feedbacks
+  };
 
   // Animation variants
   const containerVariants = {
@@ -964,7 +874,7 @@ export default function ExpertFeedback() {
                       {/* Query Header */}
                       <div
                         className="p-6 cursor-pointer"
-                        onClick={() => setExpandedQuery(expandedQuery === query.id ? null : query.id)}
+                        onClick={() => handleExpandQuery(query.id)}
                       >
                         <div className="flex justify-between items-start">
                           <h3 className="text-xl font-medium text-white mb-2 pr-6">{query.title}</h3>
@@ -1190,6 +1100,76 @@ export default function ExpertFeedback() {
                                     </button>
                                   </div>
                                 </div>
+
+                                {/* Add Feedback Form */}
+                                {/* <div className="mt-6 pt-6 border-t border-[#003B46]/30">
+                                  <h4 className="text-lg font-medium text-white mb-4">Add Your Feedback</h4>
+                                  <div className="mb-4">
+                                    <textarea
+                                      value={newFeedback[query.id] || ""}
+                                      onChange={(e) =>
+                                        setNewFeedback((prev) => ({ ...prev, [query.id]: e.target.value }))
+                                      }
+                                      placeholder="Share your expert feedback..."
+                                      rows={5}
+                                      className="block w-full rounded-md border border-[#003B46]/50 bg-[#070F12]/80 py-3 px-4 text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
+                                    ></textarea>
+                                  </div>
+                                  <div className="flex items-center justify-end">
+                                    <button
+                                      onClick={() => handleAddFeedback(query.id)}
+                                      disabled={!newFeedback[query.id] || !newFeedback[query.id].trim()}
+                                      className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
+                                        newFeedback[query.id] && newFeedback[query.id].trim()
+                                          ? "bg-gradient-to-r from-[#006770] to-[#00A3A9] hover:from-[#00A3A9] hover:to-[#006770] transition-all hover:shadow-lg hover:shadow-[#00A3A9]/20"
+                                          : "bg-[#003B46]/50 cursor-not-allowed"
+                                      }`}
+                                    >
+                                      <Send className="h-4 w-4 mr-2" />
+                                      <span>Submit Feedback</span>
+                                    </button>
+                                  </div>
+                                </div> */}
+                              </div>
+
+                              {/* Expert Feedbacks */}
+                              <div className="space-y-6 mt-6">
+                                <h4 className="text-lg font-medium text-white flex items-center">
+                                  <MessageSquare className="h-5 w-5 mr-2 text-[#00A3A9]" />
+                                  Expert Feedback{" "}
+                                  <span className="ml-2 text-sm text-gray-400">
+                                    ({(queryFeedbacks[query.id] || []).length})
+                                  </span>
+                                </h4>
+                                {(queryFeedbacks[query.id] || []).length === 0 ? (
+                                  <div className="text-center py-8 border border-dashed border-[#003B46]/30 rounded-lg">
+                                    <MessageSquare className="h-10 w-10 text-[#003B46]/50 mx-auto mb-3" />
+                                    <p className="text-gray-400 mb-2">No feedback yet</p>
+                                    <p className="text-sm text-gray-500">Be the first to provide expert feedback</p>
+                                  </div>
+                                ) : (
+                                  <div className="space-y-6">
+                                    {queryFeedbacks[query.id].map((feedback) => (
+                                      <motion.div
+                                        key={feedback._id}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.3, delay: 0.1 }}
+                                        className="bg-[#003B46]/10 rounded-lg p-5 border border-[#003B46]/30"
+                                      >
+                                        <div className="flex items-start justify-between mb-4">
+                                          <div>
+                                            <h5 className="font-medium text-white">{feedback.expertName || "Expert"}</h5>
+                                            <p className="text-sm text-gray-400">{feedback.createdAt && new Date(feedback.createdAt).toLocaleString()}</p>
+                                          </div>
+                                        </div>
+                                        <div className="prose prose-invert prose-sm max-w-none mb-4">
+                                          <p className="text-gray-300 whitespace-pre-line">{feedback.content}</p>
+                                        </div>
+                                      </motion.div>
+                                    ))}
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </motion.div>
@@ -1355,7 +1335,7 @@ export default function ExpertFeedback() {
                 </motion.div>
               ) : (
                 <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
-                  {QUERIES.filter((q) => bookmarkedQueries.includes(q.id)).map((query) => (
+                  {queries.filter((q) => bookmarkedQueries.includes(q.id)).map((query) => (
                     <motion.div
                       key={query.id}
                       variants={itemVariants}
@@ -1454,7 +1434,16 @@ export default function ExpertFeedback() {
                     </button>
                   </div>
                   <div className="mt-5">
-                    <form onSubmit={submitQuery}>
+                    <form onSubmit={async (e) => {
+                      e.preventDefault();
+                      const formData = new FormData();
+                      formData.append("title", newQuery.title);
+                      formData.append("content", newQuery.content);
+                      formData.append("category", newQuery.category);
+                      formData.append("difficulty", newQuery.difficulty);
+                      formData.append("tags", newQuery.tags.join(","));
+                      await handleSubmitQuery(formData);
+                    }}>
                       <div className="space-y-4">
                         <div>
                           <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-1">
@@ -1520,6 +1509,23 @@ export default function ExpertFeedback() {
                             <option value="Behavioral">Behavioral</option>
                             <option value="Technical">Technical</option>
                             <option value="Career Advice">Career Advice</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label htmlFor="difficulty" className="block text-sm font-medium text-gray-300 mb-1">
+                            Difficulty
+                          </label>
+                          <select
+                            id="difficulty"
+                            value={newQuery.difficulty}
+                            onChange={e => setNewQuery({ ...newQuery, difficulty: e.target.value })}
+                            className="block w-full rounded-md border border-[#003B46]/50 bg-[#070F12]/80 py-3 px-4 text-gray-100 focus:ring-2 focus:ring-[#00A3A9] focus:border-transparent transition-all"
+                            required
+                          >
+                            <option value="Easy">Easy</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Hard">Hard</option>
                           </select>
                         </div>
 

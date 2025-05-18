@@ -7,26 +7,41 @@
  * Submit a new query from a student
  */
 export async function submitQuery(formData) {
-  // Simulate server processing time
-  await new Promise((resolve) => setTimeout(resolve, 1000))
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  
+  try {
+    const query = {
+      question: formData.get("title"),
+      category: formData.get("category"),
+      tags: formData.get("tags").split(",").map(tag => tag.trim()),
+      details: formData.get("content"),
+      difficulty: formData.get("difficulty")
+    };
 
-  // In a real app, you would validate and save to a database
-  const query = {
-    title: formData.get("title"),
-    content: formData.get("content"),
-    category: formData.get("category"),
-    tags: formData
-      .get("tags")
-      .split(",")
-      .map((tag) => tag.trim()),
-    studentId: formData.get("studentId") || "current-user",
-  }
+    const response = await fetch(`${API_URL}/questions/add`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-auth-token': typeof window !== 'undefined' ? localStorage.getItem('user') : null
+      },
+      body: JSON.stringify(query)
+    });
 
-  // Return success response
-  return {
-    success: true,
-    message: "Your query has been submitted successfully",
-    queryId: Math.floor(Math.random() * 1000) + 1, // Simulate a new ID
+    if (!response.ok) {
+      throw new Error('Failed to submit question');
+    }
+
+    const data = await response.json();
+    return {
+      success: true,
+      message: "Your question has been submitted successfully",
+      queryId: data._id
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message || "Failed to submit question"
+    };
   }
 }
 

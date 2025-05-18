@@ -1,15 +1,28 @@
 const express = require('express');
 const FeedbackModel = require('../Models/feedbackModel');
+const verifyExpert = require('../middlewares/verifyExpert');
 
 const router = express.Router();
 
-// Add new feedback
-router.post('/add', (req, res) => {
-    new FeedbackModel(req.body)
-        .save()
-        .then((result) => res.status(200).json(result))
-        .catch((err) => res.status(500).json(err));
+// Add new feedback (protected route - only experts can add feedback)
+router.post('/add', verifyExpert, (req, res) => {
+  const { queryId, content, rating } = req.body;
+  
+  // Use expert ID from verified token
+  const expertId = req.expert.id;
+  
+  new FeedbackModel({
+    queryId,
+    expertId,
+    content,
+    rating,
+    isVerified: true // Auto-verify since we confirmed expert status
+  })
+    .save()
+    .then(result => res.status(201).json(result))
+    .catch(err => res.status(500).json(err));
 });
+
 // Get all feedback
 router.get('/getall', (req, res) => {
     FeedbackModel.find()
