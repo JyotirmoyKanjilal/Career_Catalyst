@@ -212,7 +212,7 @@ export default function QuestionManager() {
         // Update existing question
         const response = await axios.put(
           `${API_URL}/questions/update/${isEditingQuestion}`,
-          { ...newQuestion, answers: newAnswers }
+          { ...newQuestion, answers: newAnswers || [] }
         );
         setQuestions(questions.map((q) =>
           (q._id === isEditingQuestion || q.id === isEditingQuestion) ? response.data : q
