@@ -48,16 +48,12 @@ export async function submitQuery(formData) {
 /**
  * Submit a response from an expert
  */
-export async function submitResponse(formData) {
+export async function submitResponse() {
   // Simulate server processing time
   await new Promise((resolve) => setTimeout(resolve, 1000))
 
   // In a real app, you would validate and save to a database
-  const response = {
-    queryId: formData.get("queryId"),
-    content: formData.get("content"),
-    expertId: formData.get("expertId") || "current-expert",
-  }
+  // (response object removed as it was unused)
 
   // Return success response
   return {
@@ -70,7 +66,7 @@ export async function submitResponse(formData) {
 /**
  * Toggle bookmark status for a query
  */
-export async function toggleBookmark(queryId, userId) {
+export async function toggleBookmark() {
   // Simulate server processing time
   await new Promise((resolve) => setTimeout(resolve, 500))
 
@@ -84,7 +80,7 @@ export async function toggleBookmark(queryId, userId) {
 /**
  * Toggle upvote for a query or response
  */
-export async function toggleUpvote(itemId, itemType, userId) {
+export async function toggleUpvote() {
   // Simulate server processing time
   await new Promise((resolve) => setTimeout(resolve, 500))
 

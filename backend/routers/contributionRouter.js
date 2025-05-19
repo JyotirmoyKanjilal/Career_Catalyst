@@ -71,7 +71,7 @@ router.patch('/:id/status', async (req, res) => {
 });
 
 // Delete a contribution (only by owner)
-router.delete('/:id', verifyToken, async (req, res) => {
+router.delete('/delete/:id', verifyToken, async (req, res) => {
   try {
     const contribution = await Contribution.findById(req.params._id);
 

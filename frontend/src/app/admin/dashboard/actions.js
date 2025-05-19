@@ -16,10 +16,10 @@ export async function getContributions() {
 }
 
 // Get all Questions
-// export async function getQuestions() {
-//   const res = await axios.get(`${API_URL}/api/questions/getall`);
-//   return res.data;
-// }
+export async function getQuestions() {
+  const res = await axios.get(`${API_URL}/api/questions/getall`);
+  return res.data;
+}
 
 // Get Feedback
 export async function getFeedback() {
@@ -113,37 +113,37 @@ export async function getContributionsByCategory() {
 }
 
 // Inside fetchData function in page.jsx
-const fetchData = async () => {
-  setIsLoading(true)
-  try {
-    const [usersData, contributionsData, feedbackData, discussionsData, userGrowthData, reportsData, categoryData] = 
-      await Promise.all([
-        getUsers(),
-        getContributions(),
-        getFeedback(),
-        getDiscussions(),
-        getUserGrowth(),
-        getReports(),
-        getContributionsByCategory()
-      ]);
+// const fetchData = async () => {
+//   setIsLoading(true)
+//   try {
+//     const [usersData, contributionsData, feedbackData, discussionsData, userGrowthData, reportsData, categoryData] = 
+//       await Promise.all([
+//         getUsers(),
+//         getContributions(),
+//         getFeedback(),
+//         getDiscussions(),
+//         getUserGrowth(),
+//         getReports(),
+//         getContributionsByCategory()
+//       ]);
     
-    setUsers(usersData)
-    setContributions(contributionsData)
-    setFeedback(feedbackData)
-    setDiscussions(discussionsData)
-    setReports(reportsData)
+//     setUsers(usersData)
+//     setContributions(contributionsData)
+//     setFeedback(feedbackData)
+//     setDiscussions(discussionsData)
+//     setReports(reportsData)
     
-    // Update stats with real user growth and category data
-    setStats(prevStats => ({
-      ...prevStats,
-      userGrowth: userGrowthData,
-      contributionsByCategory: categoryData
-    }));
-  } catch (error) {
-    console.error("Error fetching data:", error)
-    setErrorMessage("Failed to load dashboard data")
-  } finally {
-    setIsLoading(false)
-  }
-}
+//     // Update stats with real user growth and category data
+//     setStats(prevStats => ({
+//       ...prevStats,
+//       userGrowth: userGrowthData,
+//       contributionsByCategory: categoryData
+//     }));
+//   } catch (error) {
+//     console.error("Error fetching data:", error)
+//     setErrorMessage("Failed to load dashboard data")
+//   } finally {
+//     setIsLoading(false)
+//   }
+// }
 
