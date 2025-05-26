@@ -210,7 +210,7 @@ export default function AIAnswer() {
     if (!fullAnswer || typingIndex >= fullAnswer.length) return;
 
     const timer = setTimeout(() => {
-      setTypingEffect(fullAnswer.substring(0, typingIndex + 1));
+      setTypingEffect(fullAnswer.substring(0, typingIndex + 10));
       setTypingIndex(typingIndex + 10);
     }, 1); // Adjust speed as needed
 
