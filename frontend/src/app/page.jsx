@@ -20,6 +20,7 @@ import {
   Sparkles,
   Star,
 } from "lucide-react";
+import Navbar from "../components/Navbar";
 
 // Define theme colors based on the provided palette
 const theme = {
@@ -239,130 +240,8 @@ export default function Home() {
       <canvas
         id="hero-canvas"
         className="fixed top-0 left-0 w-full h-full pointer-events-none opacity-30 z-0"
-      ></canvas>
-
-      {/* Header */}
-      <header
-        className={`fixed top-0 left-0 right-0 z-50 w-full border-b transition-all duration-500 ${
-          scrolled
-            ? "border-[#008C8B]/30 bg-[#070F12]/90 backdrop-blur supports-[backdrop-filter]:bg-[#070F12]/80 shadow-lg shadow-[#00A3A9]/10"
-            : "border-transparent bg-[#070F12]/70 backdrop-blur-sm"
-        }`}
-      >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center">
-              <Link href="/" className="flex items-center space-x-2 group">
-                <Briefcase className="h-7 w-7 sm:h-8 sm:w-8 text-[#00A3A9] group-hover:text-[#008C8B] transition-all duration-300 group-hover:rotate-12" />
-                <span className="text-lg sm:text-xl font-bold tracking-tight group-hover:text-[#00A3A9] transition-colors duration-300">
-                  Career Catalyst
-                </span>
-              </Link>
-            </div>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-4 lg:space-x-8">
-              {[
-                { name: "Q & A", href: "./answers", id: "" },
-                { name: "Discussions", href: "./forum", id: "" },
-                { name: "Feedback", href: "./expert-feedback", id: "" },
-                { name: "About Us", href: "/about", id: "" },
-                { name: "Contact Us", href: "/contact", id: "" },
-              ].map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  onClick={(e) => item.id && scrollToSection(e, item.id)}
-                  className={`text-sm font-medium transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-[#00A3A9] after:transition-all ${
-                    activeSection === item.id
-                      ? "text-[#00A3A9] after:w-full"
-                      : "text-gray-300 hover:text-white after:w-0 hover:after:w-full"
-                  }`}
-                >
-                  {item.name}
-                </a>
-              ))}
-            </nav>
-
-            {/* Mobile Menu Button */}
-            <div className="flex md:hidden">
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="inline-flex items-center justify-center p-2 rounded-md text-gray-300 hover:text-white hover:bg-[#003B46]/50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#00A3A9] transition-colors"
-                aria-expanded={isMenuOpen}
-                aria-label="Main menu"
-              >
-                <span className="sr-only">Open main menu</span>
-                {isMenuOpen ? (
-                  <X className="block h-6 w-6" aria-hidden="true" />
-                ) : (
-                  <Menu className="block h-6 w-6" aria-hidden="true" />
-                )}
-              </button>
-            </div>
-
-            {/* Sign In / Sign Up Buttons */}
-            <div className="hidden md:flex items-center space-x-4">
-              <Link
-                href="/login"
-                className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/signup"
-                className="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#006770] hover:bg-[#008C8B] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00A3A9] transition-all hover:scale-105 active:scale-95"
-              >
-                Get Started
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        <div
-          className={`md:hidden fixed top-16 left-0 right-0 bg-[#070F12]/95 border-b border-[#003B46]/20 overflow-hidden transition-all duration-300 ease-in-out z-40 ${
-            isMenuOpen
-              ? "max-h-[calc(100vh-4rem)] opacity-100"
-              : "max-h-0 opacity-0"
-          }`}
-        >
-          <div className="px-4 pt-2 pb-3 space-y-1 sm:px-3 max-h-[calc(100vh-4rem)] overflow-y-auto">
-            {[
-              { name: "Q & A", href: "./answers", id: "" },
-              { name: "Discussions", href: "./forum", id: "" },
-              { name: "Feedback", href: "./expert-feedback", id: "" },
-              { name: "About Us", href: "/about", id: "" },
-              { name: "Contact Us", href: "/contact", id: "" },
-            ].map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                onClick={(e) => item.id && scrollToSection(e, item.id)}
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-[#003B46]/20 transition-colors"
-              >
-                {item.name}
-              </a>
-            ))}
-            <div className="pt-4 pb-3 border-t border-[#003B46]/20">
-              <Link
-                href="/login"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-[#003B46]/20 transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/signup"
-                className="block px-3 py-2 mt-2 rounded-md text-base font-medium text-white bg-[#006770] hover:bg-[#008C8B] transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Get Started
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      ></canvas>      {/* Header */}
+      <Navbar scrolled={scrolled} />
 
       {/* Hero Section */}
       <section

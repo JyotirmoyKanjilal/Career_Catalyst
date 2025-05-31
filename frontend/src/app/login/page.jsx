@@ -46,7 +46,8 @@ export default function Login() {
             
             .then((result) => {
               console.log(result.data);
-              localStorage.setItem('user',result.data.token);
+              
+              localStorage.setItem('token',result.data.token);
               toast.success("login Successful");
               if(result.data.role === 'admin'){
                 router.push('/admin/dashboard');
