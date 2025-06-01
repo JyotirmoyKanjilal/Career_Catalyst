@@ -15,14 +15,14 @@ const AppContext = createContext();
 
 // Token management functions
 const storeToken = (token) => {
-  localStorage.setItem('authToken', token);
+  localStorage.setItem('token', token);
   // Set token for future axios requests
   api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 };
 
 const getStoredToken = () => {
   if (typeof window === 'undefined') return null;
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('token');
   if (token) {
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   }
@@ -30,7 +30,7 @@ const getStoredToken = () => {
 };
 
 const removeToken = () => {
-  localStorage.removeItem('authToken');
+  localStorage.removeItem('token');
   delete api.defaults.headers.common['Authorization'];
 };
 
@@ -41,7 +41,7 @@ export const AppProvider = ({ children }) => {
 
   // Check for existing auth on app load
   useEffect(() => {
-    const verifyToken = async () => {
+    const verifyToken = () => {
       const token = getStoredToken();
       
       if (!token) {
@@ -50,8 +50,31 @@ export const AppProvider = ({ children }) => {
       }
 
       try {
-        const { data } = await api.get('/api/users/verify');
-        setUser(data);
+        // Decode the JWT token to get user data
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split('')
+            .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+            .join('')
+        );
+        
+        const decoded = JSON.parse(jsonPayload);
+        
+        // Check if token is expired
+        if (decoded.exp * 1000 < Date.now()) {
+          throw new Error('Token expired');
+        }
+        
+        // Set user data from token
+        setUser({
+          _id: decoded._id,
+          name: decoded.name,
+          email: decoded.email,
+          role: decoded.role
+        });
+        
         setIsAuthenticated(true);
       } catch (error) {
         console.error('Auth verification error:', error);
