@@ -50,9 +50,9 @@ export default function Login() {
               localStorage.setItem('token',result.data.token);
               toast.success("login Successful");
               if(result.data.role === 'admin'){
-                router.push('/admin/dashboard');
+                window.location.href = '/admin/dashboard';
               }else{
-                router.push('/');
+                window.location.href = '/';
               }
               // !ISSERVER  localStorage.setItem('user',result.data.token);
               
