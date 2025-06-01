@@ -201,7 +201,7 @@ export async function submitContactForm(data) {
 // Fetch all expert feedbacks
 export async function fetchExpertFeedbacks() {
   try {
-    const response = await api.get('/api/feedback/getall');
+    const response = await api.get('/api/getall');
     return response.data;
   } catch (error) {
     throw new Error(error.message || "Failed to fetch expert feedbacks");
